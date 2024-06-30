@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Mobile Robot via Machine Learning: Proposal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 1in;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        p {
+            line-height: 1.6;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        figure {
+            text-align: center;
+        }
+        figure img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Autonomous Mobile Robot via Machine Learning: Proposal</h1>
+    <p><strong>Authors:</strong> Jacob Blevins, Evan Boekweg, Ilias Baali, Anupama Nair, and Pierros-Christos Skafidas</p>
+    <p><strong>Date:</strong> June 14, 2024</p>
+
+    <h2 id="sec:intro">Introduction/Background</h2>
+    <p>Autonomous vehicles are a large part of today's AI boom <a href="#ref-hottopic">[1]</a>. From perception and state estimation to path planning and system control, autonomous vehicles utilize a multitude of algorithms <a href="#ref-autonomous_review">[2]</a>. While hundreds of widely-used algorithms exist for robots in deterministic environments, unique machine learning (ML) algorithms are required for robots whose environments are highly stochastic. ML algorithms are commonly applied in advanced and highly stochastic robotic situations such as in Tesla <a href="#ref-tesla">[3]</a> and Waymo <a href="#ref-waymo">[4]</a> self-driving vehicles. The objective of this project is to develop autonomous, non-holonomic mobile robot ML algorithms that must navigate a Turtlebot3 through an environment to capture a care package as in Figure 1. Similar projects for intelligent mobile robots have been performed in <a href="#ref-autocontrol">[5]</a> and <a href="#ref-mobilecontrol">[6]</a>.</p>
+
+    <figure>
+        <img src="figs/objective_fig.png" alt="Mobile Robot Objective">
+        <figcaption>Figure 1: Mobile Robot Objective</figcaption>
+    </figure>
+
+    <h3>Dataset</h3>
+    <p>Datasets are collected by the Turtlebot's sensors:</p>
+    <ul>
+        <li>LiDAR (LDS-02 <a href="#ref-lds02">[7]</a>)
+            <ul>
+                <li>Angular speed</li>
+                <li>Measurement angle</li>
+                <li>12 point measurements for distance to objects with confidence</li>
+            </ul>
+        </li>
+        <li>Camera (Raspberry Pi Camera <a href="#ref-camera">[8]</a>)
+            <ul>
+                <li>Images</li>
+                <li>Video</li>
+            </ul>
+        </li>
+        <li>Wheel Encoder (XL430-W250 <a href="#ref-encoders">[9]</a>)
+            <ul>
+                <li>Positioning</li>
+                <li>Velocity</li>
+                <li>Acceleration</li>
+                <li>Load (torque)</li>
+                <li>Goal position</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="sec:problem definition">Problem Definition</h2>
+    <p>For robots to make decisions in stochastic environments, the aforementioned operations require methods for understanding the random variables and conditions presented to them. In the case of this project, for perception/object detection, a target objective needs to be identified. For path planning, optimized pathing needs to be determined based on the mapped environment <a href="#ref-lidar_path_planning">[10]</a>. System control should be intelligent such that the mobile robot can compensate for actuator disturbances and sensed error <a href="#ref-control_CNN">[11]</a>. The solution to these stochastic problems is a fusion of ML algorithms as discussed thoroughly in Section 3.</p>
+
+    <h2 id="sec:methods">Methods</h2>
+    <h3>Data Pre-Processing</h3>
+    <p>Filtering and cleaning sensor data is an important step in the ML process and will be performed on sensor data with the following methods:</p>
+    <ul>
+        <li><strong>Density-based filtering</strong> (DBSCAN clustering): Density-based clustering non-parametric algorithm: given a set of points in some space, group together points that are closely packed (points with many nearby neighbors), and mark outlier points that lie alone in low-density regions (those whose nearest neighbors are too far away) <a href="#ref-scikit-learn-dbscan">[12]</a>.</li>
+        <li><strong>Kalman Filtering:</strong> Kalman filtering is utilized to estimate system states given noisy data. Assuming a Gaussian distribution of sensor data, the Kalman filter quickly computes estimated states in the presence of noise using sensor measurements and predicted states <a href="#ref-KalmanFilter1D">[13]</a>.</li>
+    </ul>
+    
+    <h3>ML Algorithms</h3>
+    <p>The robot's mission can be split into three successive tasks, each one associated to a specific algorithm:</p>
+    <ul>
+        <li>Object detection: Finding the objective
+            <ul>
+                <li><em>Model:</em> Supervised learning - YOLO algorithm <a href="#ref-yolo">[14]</a></li>
+                <li><em>Sensor:</em> Camera</li>
+            </ul>
+        </li>
+        <li>Mapping: Understanding the environment
+            <ul>
+                <li><em>Model:</em> Unsupervised learning - CNN for Simultaneous Localization and Mapping <a href="#ref-SLAM">[15]</a></li>
+                <li><em>Sensors:</em> LiDAR and camera</li>
+            </ul>
+        </li>
+        <li>Control: Determining control commands
+            <ul>
+                <li><em>Model:</em> Reinforcement Learning - PPO model combined with A* path finding algorithm <a href="#ref-PPO_algo">[16]</a></li>
+                <li><em>Sensors:</em> Encoders</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="sec:results">Results and Discussion</h2>
+    <p>The goal of this project is to autonomously navigate a mobile robot to an objective, with the following scoring and expected results. Team Gantt chart (Figure 2) and contribution table (Table 1) are shown below.</p>
+
+    <ul>
+        <li><strong>Scoring:</strong>
+            <ul>
+                <li>Jaccard score for YOLO, with a goal of 0.9+</li>
+                <li>Silhouette clustering, with a goal of 0.7+</li>
+                <li>Minimize Cross-Entropy Loss for reinforcement learning, with a goal of &lt;10% error</li>
+            </ul>
+        </li>
+        <li><strong>Expected Results:</strong>
+            <ul>
+                <li>Final position distance from extraction point: Be within 1/3 meter</li>
+                <li>Time requirement: Reach the extraction point within 60 seconds</li>
+            </ul>
+        </li>
+    </ul>
+
+    <figure>
+        <img src="figs/gantt.png" alt="Team Gantt Chart">
+        <figcaption>Figure 2: Team Gantt Chart</figcaption>
+    </figure>
+
+    <table>
+        <caption>Table 1: Team Contributions</caption>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Proposal Contributions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Jacob Blevins</td>
+                <td>Literature review, problem definition, and initial robot testing</td>
+            </tr>
+            <tr>
+                <td>Evan Boekweg</td>
+                <td>Metrics, goals, and results</td>
+            </tr>
+            <tr>
+                <td>Ilias Baali</td>
+                <td>ML algorithms and models</td>
+            </tr>
+            <tr>
+                <td>Anupama Nair</td>
+                <td>Data pre-processing</td>
+            </tr>
+            <tr>
+                <td>Pierros-Christos Skafidas</td>
+                <td>Dataset review</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>References</h2>
+    <ol>
+        <li id="ref-hottopic">D. Oliver Cann, “These are the top 10 emerging technologies of 2016,” Media Relations World Economic Forum, 2016.</li>
+        <li id="ref-autonomous_review">D. Parekh, N. Poddar, A. Rajpurkar, M. Chahal, N. Kumar, G. P. Joshi, and W. Cho, “A Review on Autonomous Vehicles: Progress, Methods and Challenges,” Electronics, vol. 11, no. 14, 2022. [Online]. Available: https://www.mdpi.com/2079-9292/11/14/2162</li>
+        <li id="ref-tesla">“Tesla,” 2024. [Online]. Available: https://tesla.com</li>
+        <li id="ref-waymo">“Waymo,” 2024. [Online]. Available: https://waymo.com</li>
+        <li id="ref-autocontrol">W. Xia, H. Li, and B. Li, “A Control Strategy of Autonomous Vehicles Based on Deep Reinforcement Learning,” in 2016 9th International Symposium on Computational Intelligence and Design (ISCID), 2016, vol. 2, pp. 198-201.</li>
+        <li id="ref-mobilecontrol">X. Ruan, D. Ren, X. Zhu, and J. Huang, “Mobile Robot Navigation based on Deep Reinforcement Learning,” in 2019 Chinese Control And Decision Conference (CCDC), 2019, pp. 6174-6178.</li>
+        <li id="ref-lds02">“LDS-02,” 2024. [Online]. Available: https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_lds_02/</li>
+        <li id="ref-camera">“Raspberry Pi Camera,” 2024. [Online]. Available: https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_raspi_cam/</li>
+        <li id="ref-encoders">“Encoder,” 2024. [Online]. Available: https://emanual.robotis.com/docs/en/platform/turtlebot3/appendixes/#more-info</li>
+        <li id="ref-lidar_path_planning">G. Zamanakos, L. Tsochatzidis, A. Amanatiadis, and I. Pratikakis, “A comprehensive survey of LIDAR-based 3D object detection methods with deep learning for autonomous driving,” Computers & Graphics, vol. 99, pp. 153-181, 2021. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S0097849321001321</li>
+        <li id="ref-control_CNN">N. A. Spielberg, M. Brown, N. R. Kapania, J. C. Kegelman, and J. C. Gerdes, “Neural network vehicle models for high-performance automated driving,” Science Robotics, vol. 4, no. 28, 2019. [Online]. Available: https://www.science.org/doi/abs/10.1126/scirobotics.aaw1975</li>
+        <li id="ref-scikit-learn-dbscan">Scikit-learn Developers, “DBSCAN: Density-Based Spatial Clustering of Applications with Noise,” 2024. [Online]. Available: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html</li>
+        <li id="ref-KalmanFilter1D">D. Wilson, “The Kalman Filter: An Example of Using 1-D Filters,” 2024. [Online]. Available: https://www.kalmanfilter.net/kalman1d.html</li>
+        <li id="ref-yolo">J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, “You Only Look Once: Unified, Real-Time Object Detection,” in 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2016, pp. 779-788.</li>
+        <li id="ref-SLAM">X. Wang, “Autonomous Mobile Robot Visual SLAM Based on Improved CNN Method,” IOP Conf. Ser.: Mater. Sci. Eng, 2018. [Online]. Available: https://ietresearch.onlinelibrary.wiley.com/doi/abs/10.1049/ell2.12342</li>
+        <li id="ref-PPO_algo">X. Jin and Z. Wang, “Proximal policy optimization based dynamic path planning algorithm for mobile robots,” Electronics Letters, vol. 58, no. 1, pp. 13-15, 2022. [Online]. Available: https://ietresearch.onlinelibrary.wiley.com/doi/abs/10.1049/ell2.12342</li>
+    </ol>
+</body>
+</html>
