@@ -4,4 +4,3 @@ install/
 log/
 src/turtlebot3_simulations/
 *_dataset/
-data/
