@@ -39,7 +39,7 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
     - `object_detection`: Object detection pipeline
         - `predict`: Script used for predition
         - `yolo_training.py`: Script used for Object detection training using YOLO
-    - `turtlebot3_example_code`:
+    - `turtlebot3_example_code`: Pre-build Turtlebot ROS program code for reference
     - `q_learning.ipynb`: Q-Learning for path planning and control
 - `rosbag_to_csv.py`: Python script to generate the data from the simulation
 - `simulation.md`: Readme to run a simulation
