@@ -17,7 +17,7 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
 - `data`: folder containing the data from the simulations
     - `raw_dataset_lidar.csv`: lidar sensor data
     - `raw_dataset_odom.csv`: encoder data
-    - `merged_lidar_odom_data.csv`: merged data
+    - `merged_lidar_odom_data.csv`: merx`ged data
 - `features`
     - `radar_plot_frames`: contains frames of the lidar data
     - `plotting.ipynb`: (Depricated) preprocessing data
