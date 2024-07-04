@@ -34,9 +34,8 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
     - `main.pdf`: PDF version of the report
     - `main.tex`: Latex file of the report
 - `src`: folder containing the ML pipelines
-    - `ml_robotics_interfaces`: 
-    - `ml_robotics_project`:
-        - ``:
+    - `ml_robotics_interfaces`: ROS program code
+    - `ml_robotics_project`: ROS program code
     - `object_detection`: Object detection pipeline
         - `predict`: Script used for predition
         - `yolo_training.py`: Script used for Object detection training using YOLO
