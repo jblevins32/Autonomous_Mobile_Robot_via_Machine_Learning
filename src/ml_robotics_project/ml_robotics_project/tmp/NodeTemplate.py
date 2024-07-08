@@ -18,10 +18,13 @@ from ml_robotics_interfaces.srv import GetFtm
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 from ml_robotics_interfaces.msg import Ftm, FtmPair
-from ml_robotics_project.old import ftm_functions as F
+from ml_robotics_project import ppo_rl_node_functions as F
+
+import abc
 
 # from ftm_project import ftm_functions as F
 
+metaclass=abc.ABCMeta
 
 class NodeTemplate(Node):
 

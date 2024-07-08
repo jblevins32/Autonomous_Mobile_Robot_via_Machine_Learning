@@ -3,6 +3,7 @@
 ## Clone from GitHub
 
 Go to the `src` directory of your ROS workspace (create it using `mkdir src` if it doesn't already exist)
+
 ```console
 cd ~/turtlebot3_ws/src/
 ```
@@ -11,7 +12,13 @@ Then run the following:
 
 ```
 git clone -b humble-devel https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
-cd ~/turtlebot3_ws && colcon build --symlink-install
+```
+
+Go back to the root of your ROS2 workspace (in this case, the `turtlebot3_ws` directory) and build the package:
+
+```
+cd ~/turtlebot3_ws
+colcon build --symlink-install --packages-select turtlebot3_fake_node turtlebot3_gazebo turtlebot3_simulations
 ```
 
 ## General Setup
@@ -38,7 +45,6 @@ ros2 launch turtlebot3_gazebo empty_world.launch.py
 ```
 
 ## Turtlebot3 World
-
 
 To run the simulation in a world with obstacles, run:
 
