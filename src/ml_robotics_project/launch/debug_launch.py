@@ -6,43 +6,64 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    collect_time_launch_arg = DeclareLaunchArgument(
-        "collect_time", default_value=TextSubstitution(text="2.5")
-    )
-    processing_delay_launch_arg = DeclareLaunchArgument(
-        "processing_delay", default_value=TextSubstitution(text="0.15")
-    )
-    ftm_offset_launch_arg = DeclareLaunchArgument(
-        "ftm_offset", default_value=TextSubstitution(text="0.0")
-    )
-    debug_mode_launch_arg = DeclareLaunchArgument(
-        "debug_mode", default_value=TextSubstitution(text="True")
+    debug_enabled_launch_arg = DeclareLaunchArgument(
+        "debug_enabled", default_value=TextSubstitution(text="True")
     )
 
     return LaunchDescription(
         [
-            collect_time_launch_arg,
-            processing_delay_launch_arg,
-            ftm_offset_launch_arg,
-            debug_mode_launch_arg,
+            debug_enabled_launch_arg,
             Node(
-                package="ftm_project",
-                executable="ftm_server",
-                name="ftm_server",  # Node name
-                # Set parameters here
+                package="ml_robotics_project",
+                executable="yolo_node",
+                name="yolo_node",
                 parameters=[
                     {
-                        "collect_time": LaunchConfiguration("collect_time"),
-                        "processing_delay": LaunchConfiguration("processing_delay"),
-                        "ftm_offset": LaunchConfiguration("ftm_offset"),
-                        "debug_mode": LaunchConfiguration("debug_mode"),
+                        "debug_enabled": LaunchConfiguration("debug_enabled"),
                     }
                 ],
+                output="screen",
+                emulate_tty=True,
+                arguments=[("__log_level:=debug")],
             ),
             Node(
-                package="ftm_project",
-                executable="multilateration",
-                name="multilateration",  # Node name
+                package="ml_robotics_project",
+                executable="slam_node",
+                name="slam_node",
+                parameters=[
+                    {
+                        "debug_enabled": LaunchConfiguration("debug_enabled"),
+                    }
+                ],
+                output="screen",
+                emulate_tty=True,
+                arguments=[("__log_level:=debug")],
+            ),
+            Node(
+                package="ml_robotics_project",
+                executable="ppo_node",
+                name="ppo_node",
+                parameters=[
+                    {
+                        "debug_enabled": LaunchConfiguration("debug_enabled"),
+                    }
+                ],
+                output="screen",
+                emulate_tty=True,
+                arguments=[("__log_level:=debug")],
+            ),
+            Node(
+                package="ml_robotics_project",
+                executable="a_star_node",
+                name="a_star_node",
+                parameters=[
+                    {
+                        "debug_enabled": LaunchConfiguration("debug_enabled"),
+                    }
+                ],
+                output="screen",
+                emulate_tty=True,
+                arguments=[("__log_level:=debug")],
             ),
         ]
     )

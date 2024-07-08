@@ -4,3 +4,7 @@ install/
 log/
 src/turtlebot3_simulations/
 *_dataset/
+data/
+.vscode/
+*.pyc
+**__pycache__/

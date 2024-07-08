@@ -1,0 +1,3 @@
+float64 value1
+float64 value2
+float64 value3

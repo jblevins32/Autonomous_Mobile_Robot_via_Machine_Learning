@@ -1,34 +1,16 @@
 import rclpy
-from rclpy.action import ActionClient
 from rclpy.node import Node
 from rclpy.qos import QoSPresetProfiles
-from rclpy.time import Time
-import asyncio
-
-from action_msgs.msg import GoalStatus
-
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from nav_msgs.msg import Odometry
-
-
-import numpy as np
-from irobot_create_msgs.srv import ResetPose
-from ml_robotics_interfaces.srv import GetFtm
-
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
-from ml_robotics_interfaces.msg import Ftm, FtmPair
-from ml_robotics_project.old import ftm_functions as F
 
 # from ftm_project import ftm_functions as F
 
-
-class A_Star_Node(Node):
+class Motor_Node(Node):
 
     DEBUG = False
 
     def __init__(self):
-        super().__init__("a_star_node")  # Initialize & name the node
+        super().__init__("motor_node")  # Initialize & name the node
         self.init_member_variables()
         self.init_ros_parameters()
         self.init_publishers()
@@ -112,7 +94,7 @@ class A_Star_Node(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    node = A_Star_Node()
+    node = Motor_Node()
     rclpy.spin(node)
 
     # Destroy the node explicitly (optional)
