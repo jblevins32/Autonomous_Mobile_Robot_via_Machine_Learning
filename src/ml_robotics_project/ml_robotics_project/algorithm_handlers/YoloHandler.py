@@ -40,8 +40,8 @@ class YoloHandler(IYoloHandler):
             return False, Image()
 
         # Get bounding box coordinates
-        top_left = (results.boxes.xyxy[0], results.boxes.xyxy[1])
-        bottom_right = (results.boxes.xyxy[2], results.boxes.xyxy[3])
+        top_left = (results.boxes.xyxy[0][0], results.boxes.xyxy[0][1])
+        bottom_right = (results.boxes.xyxy[0][2], results.boxes.xyxy[0][3])
 
         # Draw bounding box
         bounding_box_image = self._draw_bounding_box(
@@ -75,7 +75,7 @@ class YoloHandler(IYoloHandler):
         return True, image_data
 
     def _postprocess_bounding_box(self, results):
-        x1, y1, x2, y2 = results.boxes.xyxy
+        x1, y1, x2, y2 = results.boxes.xyxy[0]
         return BoundingBox(
-            top_left=Point(x=x1, y=y1, z=0.0), bottom_right=Point(x=x2, y=y2, z=0.0)
+            top_left=Point(x=float(x1), y=float(y1), z=0.0), bottom_right=Point(x=float(x2), y=float(y2), z=0.0)
         )

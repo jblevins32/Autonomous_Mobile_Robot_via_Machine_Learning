@@ -10,7 +10,7 @@ class ImagePublisher(Node):
 
     def __init__(self):
         super().__init__('image_publisher') # function from the node class that is a constructor. Unsure what it does.
-        self.publisher_ = self.create_publisher(Image, '/image_raw', 10) # declare that this node publishes images over a topic \iamge_raw with a queue of 10. Must match subscriber!!
+        self.publisher_ = self.create_publisher(Image, 'image_data', 10) # declare that this node publishes images over a topic \iamge_raw with a queue of 10. Must match subscriber!!
         timer_period = 0.1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback) # creating a timer to call the timer_callback at a specific interval
         self.bridge = CvBridge() # bridges the gap between ROS images and OpenCV images

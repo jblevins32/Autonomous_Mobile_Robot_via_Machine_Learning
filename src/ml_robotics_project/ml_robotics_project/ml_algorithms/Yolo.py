@@ -12,7 +12,7 @@ class Yolo(IYolo):
         self._results = None
 
     def update(self, image_data: np.ndarray) -> None:
-        self._results = self._model(image_data, stream=True)
+        self._results = self._model(image_data)
 
     def get_results(self):
         if self._results is None:

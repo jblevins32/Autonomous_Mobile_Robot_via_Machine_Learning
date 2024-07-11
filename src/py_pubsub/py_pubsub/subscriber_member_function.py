@@ -12,7 +12,7 @@ class ImageSubscriber(Node):
         super().__init__('image_subscriber')
         self.subscription = self.create_subscription(
             Image,
-            '/image_raw',
+            'image_data',
             self.listener_callback,
             10
         )

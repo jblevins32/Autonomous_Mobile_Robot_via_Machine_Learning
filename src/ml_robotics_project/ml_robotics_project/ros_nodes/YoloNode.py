@@ -58,9 +58,7 @@ class YoloNode(INode):
         self._yolo_handler.update(self._curr_image_msg)
 
         # Publish bounding box data
-        success, bbox_msg = self._yolo_handler.get_objective_bounding_box(
-            self._curr_image_msg
-        )
+        success, bbox_msg = self._yolo_handler.get_objective_bounding_box()
         if success:
             self._debug(f"[objective_bbox_pub] Publishing: {bbox_msg}")
             self.objective_bbox_pub.publish(bbox_msg)
