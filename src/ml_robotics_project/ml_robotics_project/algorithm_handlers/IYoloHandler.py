@@ -2,6 +2,7 @@ import abc
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
+from ml_robotics_interfaces.msg import BoundingBox
 
 
 class IYoloHandler(metaclass=abc.ABCMeta):
@@ -15,18 +16,23 @@ class IYoloHandler(metaclass=abc.ABCMeta):
         ) or NotImplemented
 
     @abc.abstractmethod
-    def get_objective_coords(self, image_msg: Image) -> tuple[bool, Point]:
-        """Gets the objective coordinates from the image message.
-
-        Parameters
-        ----------
-        image_msg : Image
-            ROS2 Image message.
+    def get_objective_bounding_box(self) -> tuple[bool, BoundingBox]:
+        """Gets the bounding box of the objective object.
 
         Returns
         -------
-        tuple[bool, Point]
-            A tuple of boolean and ROS2 Point message. The boolean indicates if the image contains the objective.
-            The ROS2 Point message contains the objective coordinates.
+        tuple[bool, BoundingBox]
+            A tuple containing a boolean indicating success and the bounding box data.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_bounding_box_image(self) -> tuple[bool, Image]:
+        """Gets the bounding box image.
+
+        Returns
+        -------
+        tuple[bool, Image]
+            A tuple containing a boolean indicating success and the image containing the bounding box.
         """
         raise NotImplementedError

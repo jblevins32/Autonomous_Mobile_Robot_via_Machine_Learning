@@ -13,7 +13,9 @@
   <test_depend>ament_lint_common</test_depend>
 
   <!-- Other interface packages -->
-  <!-- <depend>other_package_msgs</depend> -->
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
 
   <!-- Interface dependencies -->
   <buildtool_depend>rosidl_default_generators</buildtool_depend>

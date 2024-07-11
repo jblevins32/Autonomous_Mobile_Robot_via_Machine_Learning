@@ -1,4 +1,5 @@
 import numpy as np
+from ultralytics import YOLO
 
 from ml_robotics_project.ml_algorithms.IYolo import IYolo
 
@@ -6,12 +7,14 @@ from ml_robotics_project.ml_algorithms.IYolo import IYolo
 class Yolo(IYolo):
     """YOLO algorithm class."""
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, model_path: str) -> None:
+        self._model = YOLO(model_path)
+        self._results = None
 
-    def get_objective_coords(self, image_data: np.ndarray) -> tuple[bool, np.ndarray]:
-        # TODO Implement this method
+    def update(self, image_data: np.ndarray) -> None:
+        self._results = self._model(image_data, stream=True)
 
-        # YOLO algorithm implementation
-
-        return False, np.arange(3)
+    def get_results(self):
+        if self._results is None:
+            return None
+        return self._results[0].cpu().numpy()

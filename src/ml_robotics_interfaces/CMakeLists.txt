@@ -5,19 +5,23 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependenciesF
+# find dependencies
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
+# find_package(<dependency> REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED) # All interfaces rely on this package
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Ftm.msg"
-  "msg/FtmPair.msg"
+  "msg/BoundingBox.msg"
+  "msg/BoundingBoxStamped.msg"
+  "msg/BoundingBoxImage.msg"
   # "msg/<CustomMessage>.msg"
-  "srv/GetFtm.srv"
-  # "srv/<CustomService.srv"
-  # DEPENDENCIES <dependencies> # Add packages that above messages depend on
+  # "srv/<CustomService>.srv"
+  DEPENDENCIES std_msgs geometry_msgs sensor_msgs # Add packages that above messages depend on
 )
 
 if(BUILD_TESTING)
