@@ -14,6 +14,9 @@
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>python3-sklearn</exec_depend>
   <exec_depend>python3-torch</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>python3-ultralytics-pip</exec_depend>
+  <exec_depend>python3-pyqt5</exec_depend>
   <!-- Find registered ROS2 python packages at https://github.com/ros/rosdistro/blob/master/rosdep/python.yaml-->
 
   <exec_depend>teleop_twist_keyboard</exec_depend>

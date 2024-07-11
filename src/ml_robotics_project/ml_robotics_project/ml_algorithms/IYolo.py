@@ -14,7 +14,7 @@ class IYolo(metaclass=abc.ABCMeta):
         ) or NotImplemented
 
     @abc.abstractmethod
-    def get_objective_coords(self, image_data: np.ndarray) -> tuple[bool, np.ndarray]:
+    def get_objective_coords(self, image_data: np.ndarray):
         """Gets the objective coordinates from the image message.
 
         Parameters
