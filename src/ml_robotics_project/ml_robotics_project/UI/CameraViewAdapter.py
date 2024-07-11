@@ -2,7 +2,7 @@ from sensor_msgs.msg import Image
 
 from ml_robotics_project.UI.ICameraView import ICameraView
 from ml_robotics_project.UI.ICameraViewAdapter import ICameraViewAdapter
-from ml_robotics_interfaces.msg import BoundingBoxImage
+from ml_robotics_interfaces.msg import BoundingBoxImage, BoundingBox
 
 from cv_bridge import CvBridge
 import numpy as np

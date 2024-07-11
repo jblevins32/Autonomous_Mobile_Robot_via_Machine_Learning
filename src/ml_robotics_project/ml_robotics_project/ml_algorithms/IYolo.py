@@ -9,23 +9,30 @@ class IYolo(metaclass=abc.ABCMeta):
     @classmethod
     def __subclasshook__(cls, subclass):
         return (
-            hasattr(subclass, "get_objective_coords")
-            and callable(subclass.get_objective_coords)
+            hasattr(subclass, "update")
+            and callable(subclass.update)
+            and hasattr(subclass, "get_results")
+            and callable(subclass.get_results)
         ) or NotImplemented
 
     @abc.abstractmethod
-    def get_objective_coords(self, image_data: np.ndarray):
-        """Gets the objective coordinates from the image message.
+    def update(self, image_data: np.ndarray) -> None:
+        """Updates the YOLO algorithm with the new image data.
 
         Parameters
         ----------
         image_data : ndarray
             Image data array.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_results(self):
+        """Gets the results from the YOLO algorithm.
 
         Returns
         -------
-        tuple[bool, ndarray]
-            A tuple of boolean and an array representing a point in space. The boolean indicates if the image contains the objective.
-            The point contains the objective coordinates.
+        Results
+            Ultralytics YOLO results.
         """
         raise NotImplementedError

@@ -8,8 +8,13 @@ class Yolo(IYolo):
     """YOLO algorithm class."""
 
     def __init__(self, model_path: str) -> None:
-        self.model = YOLO(model_path)
+        self._model = YOLO(model_path)
+        self._results = None
 
-    def get_objective_coords(self, image_data: np.ndarray):
-        results = self.model(image_data, stream=True)
-        return results[0].cpu().numpy()
+    def update(self, image_data: np.ndarray) -> None:
+        self._results = self._model(image_data, stream=True)
+
+    def get_results(self):
+        if self._results is None:
+            return None
+        return self._results[0].cpu().numpy()

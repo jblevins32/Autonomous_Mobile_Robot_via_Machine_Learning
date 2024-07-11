@@ -27,7 +27,8 @@ setup(
             "a_star_node = ml_robotics_project.AStarNode:main",
             "ppo_node = ml_robotics_project.PpoNode:main",
             "slam_node = ml_robotics_project.SlamNode:main",
-            "yolo_node = ml_robotics_project.YoloNode:main",
+            "yolo_node = ml_robotics_project.yolo_node_entry_point:main",
+            "camera_presenter_node = ml_robotics_project.CameraPresenterNode:main",
         ],
     },
 )
