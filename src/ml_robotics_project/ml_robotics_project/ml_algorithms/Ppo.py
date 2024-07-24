@@ -1,5 +1,7 @@
+"""
+PPO algorithm class.
+"""
 import numpy as np
-
 from ml_robotics_project.ml_algorithms.IPpo import IPpo
 
 

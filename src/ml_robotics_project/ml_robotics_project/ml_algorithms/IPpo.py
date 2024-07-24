@@ -1,5 +1,7 @@
+"""
+Interface for PPO class. This interface is used to ensure the PPO class implements the required methods.
+"""
 import abc
-
 import numpy as np
 
 

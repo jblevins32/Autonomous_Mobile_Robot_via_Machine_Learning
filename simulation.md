@@ -21,6 +21,15 @@ cd ~/turtlebot3_ws
 colcon build --symlink-install --packages-select turtlebot3_fake_node turtlebot3_gazebo turtlebot3_simulations
 ```
 
+If Gazebo is not yet installed, run:
+
+```
+sudo apt-get install ros-humble-ros-gz
+rosdep install --from-path src -yi
+```
+
+Then try building the package again.
+
 ## General Setup
 
 Every time you start a new terminal, you must source your local ROS workspace and specify your turtlebot model. From your ROS workspace, run:

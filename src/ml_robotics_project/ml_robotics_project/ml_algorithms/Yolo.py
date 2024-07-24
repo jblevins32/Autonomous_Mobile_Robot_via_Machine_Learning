@@ -1,3 +1,7 @@
+"""
+This module implements the YOLO algorithm. It uses the Ultralytics YOLO library on the YOLOv8 model, which is robust and open-source.
+"""
+
 import numpy as np
 from ultralytics import YOLO
 

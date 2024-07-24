@@ -1,5 +1,7 @@
+"""
+AStar algorithm class.
+"""
 import numpy as np
-
 from ml_robotics_project.ml_algorithms.IAStar import IAStar
 
 

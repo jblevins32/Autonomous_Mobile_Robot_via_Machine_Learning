@@ -1,3 +1,7 @@
+"""
+This module implements the SLAM algorithm.
+"""
+
 import numpy as np
 
 from ml_robotics_project.ml_algorithms.ISlam import ISlam
