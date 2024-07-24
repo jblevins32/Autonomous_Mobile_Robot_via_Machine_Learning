@@ -1,5 +1,8 @@
-import abc
+"""
+This module defines the interface for the SLAM class. This interface is used to ensure the SLAM class implements the required methods.
+"""
 
+import abc
 import numpy as np
 
 

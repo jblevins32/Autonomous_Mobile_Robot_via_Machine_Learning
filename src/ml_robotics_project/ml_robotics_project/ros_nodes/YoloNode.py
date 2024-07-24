@@ -1,3 +1,10 @@
+"""
+This module implements the YOLO node.
+This node is responsible for computing objective coordinates given an image.
+It receives a ROS2 Image message as input and sends a custom-made BoundingBox message as output.
+It also optionally publishes new ROS2 Images with superimposed bounding boxes for visualization purposes.
+"""
+
 import rclpy
 from rclpy.qos import QoSPresetProfiles
 from sensor_msgs.msg import Image

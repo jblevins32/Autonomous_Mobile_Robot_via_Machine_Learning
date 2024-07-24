@@ -1,3 +1,8 @@
+    """This module implements the entry point for the YOLO node.
+
+    When the command 'ros2 run ml_robotics_project yolo_node' is executed, this script is run.
+    """
+
 from pathlib import Path
 
 import rclpy

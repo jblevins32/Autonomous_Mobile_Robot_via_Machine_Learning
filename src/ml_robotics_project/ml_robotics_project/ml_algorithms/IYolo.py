@@ -1,5 +1,7 @@
+"""
+This module implements the interface for the YOLO class. This interface is used to ensure the YOLO class implements the required methods.
+"""
 import abc
-
 import numpy as np
 
 
