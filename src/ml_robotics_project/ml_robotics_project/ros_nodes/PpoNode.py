@@ -3,19 +3,19 @@ from rclpy.qos import QoSPresetProfiles
 from nav_msgs.msg import Odometry, Path
 from geometry_msgs.msg import Twist
 
-from ml_robotics_project.INode import INode
+from ml_robotics_project.ros_nodes.INode import INode
 from ml_robotics_project.algorithm_handlers.PpoHandler import PpoHandler
 
 
 class PpoNode(INode):
     """Node that computes desired robot velocity given odometry and trajectory data."""
 
-    def __init__(self, node_name: str) -> None:
+    def __init__(self, node_name: str, ppo_handler: PpoHandler) -> None:
         super().__init__(node_name)
         self.get_logger().info("PpoNode started")
+        self._ppo_handler = ppo_handler
 
     def _init_member_variables(self) -> None:
-        self._ppo_handler = PpoHandler()
         self._curr_odom_msg = None
         self._curr_trajectory_msg = None
 

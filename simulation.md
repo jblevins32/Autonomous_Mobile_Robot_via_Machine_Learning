@@ -1,6 +1,8 @@
-# Simulation
+# Simulation Setup
 
-## Clone from GitHub
+The following section explains how to get the Gazebo simulation up and running.
+
+## Clone Simulation Repo from GitHub
 
 Go to the `src` directory of your ROS workspace (create it using `mkdir src` if it doesn't already exist)
 
@@ -93,3 +95,47 @@ To save the map, open a new terminal and run:
 export TURTLEBOT3_MODEL=burger
 ros2 run nav2_map_server map_saver_cli -f ~/turtlebot3_ws/map
 ```
+
+# Adding a Camera
+
+Navigate to the directory `src/turtlebot3_simulations/turtlebot3_gazebo/models/turtlebot3_burger/`. Open 2 model files: `model.sdf` and `model-1_4.sdf`. In **both** files, locate the section that begins with `<link name="base_scan">`, then add the following code just above the closing `</link>` tag:
+
+```xml
+<sensor type="camera" name="camera">
+    <update_rate>10</update_rate>
+    <pose>-0.032 0 0.171 0 0 0</pose>
+    <visualize>true</visualize>
+    <camera name="head">
+        <!--Approximate field-of-view of pi cam-->
+        <horizontal_fov>1.089</horizontal_fov>
+        <image>
+        <width>640</width>
+        <height>480</height>
+        <format>R8G8B8</format>
+        </image>
+        <clip>
+        <near>0.05</near>
+        <far>8.0</far>
+        </clip>
+        <noise>
+        <type>gaussian</type>
+        <!-- Noise is sampled independently per pixel on each frame.
+                That pixel's noise value is added to each of its color
+                channels, which at that point lie in the range [0,1]. -->
+        <mean>0.0</mean>
+        <stddev>0.007</stddev>
+        </noise>
+    </camera>
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <ros>
+        <!-- TODO(louise) Remapping not working due to https://github.com/ros-perception/image_common/issues/93 -->
+        <argument>image_raw:=image_demo</argument>
+        <argument>camera_info:=camera_info_demo</argument>
+        </ros>
+        <!-- camera_name>omit so it defaults to sensor name</camera_name-->
+        <!-- frame_name>omit so it defaults to link name</frameName-->
+    </plugin>
+    </sensor>
+```
+
+This will create a virtual camera within the Gazebo simulation that publishes to the `image_raw` topic.

@@ -3,7 +3,7 @@ from rclpy.qos import QoSPresetProfiles
 from nav_msgs.msg import OccupancyGrid, Path
 from geometry_msgs.msg import Point
 
-from ml_robotics_project.INode import INode
+from ml_robotics_project.ros_nodes.INode import INode
 from ml_robotics_project.algorithm_handlers.AStarHandler import AStarHandler
 
 

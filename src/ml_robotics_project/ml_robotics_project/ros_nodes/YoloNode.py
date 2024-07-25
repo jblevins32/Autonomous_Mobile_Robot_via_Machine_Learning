@@ -1,5 +1,5 @@
-"""
-This module implements the YOLO node.
+"""This module implements the YOLO node.
+
 This node is responsible for computing objective coordinates given an image.
 It receives a ROS2 Image message as input and sends a custom-made BoundingBox message as output.
 It also optionally publishes new ROS2 Images with superimposed bounding boxes for visualization purposes.
@@ -10,7 +10,7 @@ from rclpy.qos import QoSPresetProfiles
 from sensor_msgs.msg import Image
 
 from ml_robotics_interfaces.msg import BoundingBox
-from ml_robotics_project.INode import INode
+from ml_robotics_project.ros_nodes.INode import INode
 from ml_robotics_project.algorithm_handlers.IYoloHandler import IYoloHandler
 
 
@@ -32,20 +32,20 @@ class YoloNode(INode):
         self.objective_bbox_pub = self.create_publisher(
             BoundingBox,
             "bounding_box",
-            QoSPresetProfiles.SENSOR_DATA.value,
+            10,
         )
         self.bbox_image_pub = self.create_publisher(
             Image,
             "bounding_box_image",
-            QoSPresetProfiles.SENSOR_DATA.value,
+            10,
         )
 
     def _init_subscribers(self) -> None:
         self.image_sub = self.create_subscription(
             Image,
-            "image_data",
+            "camera/image_raw",
             self.image_sub_callback,
-            QoSPresetProfiles.SENSOR_DATA.value,
+            10,
         )
 
     def _init_timers(self) -> None:
@@ -55,13 +55,14 @@ class YoloNode(INode):
         )
 
     def image_sub_callback(self, msg) -> None:
-        self._debug(f"[image_sub] Received: {msg}")
+        # self._debug("[image_sub] Received: image_raw")
         self._curr_image_msg = msg
 
     def objective_bbox_pub_timer_callback(self) -> None:
         if self._curr_image_msg is None:
             return
 
+        # Update YOLO algorithm with new input image
         self._yolo_handler.update(self._curr_image_msg)
 
         # Publish bounding box data
@@ -73,5 +74,8 @@ class YoloNode(INode):
         # Publish new image with bounding box (for visualization purposes)
         success, bbox_image_msg = self._yolo_handler.get_bounding_box_image()
         if success:
-            self._debug(f"[bbox_image_pub] Publishing bounding box image")
+            # self._debug(f"[bbox_image_pub] Publishing: bounding_box_image")
+            self.get_logger().info(
+                "Publishing Image"
+            )
             self.bbox_image_pub.publish(bbox_image_msg)
