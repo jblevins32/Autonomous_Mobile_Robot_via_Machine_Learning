@@ -10,8 +10,8 @@ from ml_robotics_project.ml_algorithms.Slam import Slam
 class SlamHandler(ISlamHandler):
     """Handler for SLAM algorithm. This class accounts for data preprocessing and postprocessing"""
 
-    def __init__(self) -> None:
-        self._slam = Slam()
+    def __init__(self, slam: Slam) -> None:
+        self._slam = slam
 
     def get_grid_map(self, odom_msg: Odometry, lidar_msg: LaserScan) -> OccupancyGrid:
         # TODO Implement this method

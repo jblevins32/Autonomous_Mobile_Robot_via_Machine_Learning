@@ -1,3 +1,9 @@
+"""This module implements the interface for YOLO handlers.
+
+This interface is used to define the methods that YOLO handlers must implement.
+This is makes the system easy to modify and extend, as different YOLO handlers can be created by implementing this interface.
+"""
+
 import abc
 
 from sensor_msgs.msg import Image
@@ -11,9 +17,24 @@ class IYoloHandler(metaclass=abc.ABCMeta):
     @classmethod
     def __subclasshook__(cls, subclass):
         return (
-            hasattr(subclass, "get_objective_coords")
-            and callable(subclass.get_objective_coords)
+            hasattr(subclass, "update")
+            and callable(subclass.update)
+            and hasattr(subclass, "get_objective_bounding_box")
+            and callable(subclass.get_objective_bounding_box)
+            and hasattr(subclass, "get_bounding_box_image")
+            and callable(subclass.get_bounding_box_image)
         ) or NotImplemented
+
+    @abc.abstractmethod
+    def update(self, image_msg: Image) -> None:
+        """Updates the YOLO algorithm with a new image.
+
+        Parameters
+        ----------
+        image_msg : Image
+            The image data to update the YOLO algorithm with.
+        """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_objective_bounding_box(self) -> tuple[bool, BoundingBox]:

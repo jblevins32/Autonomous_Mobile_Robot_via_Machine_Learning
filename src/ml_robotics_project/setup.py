@@ -24,11 +24,12 @@ setup(
     entry_points={
         "console_scripts": [
             # Put entry points here
-            "a_star_node = ml_robotics_project.AStarNode:main",
-            "ppo_node = ml_robotics_project.PpoNode:main",
-            "slam_node = ml_robotics_project.SlamNode:main",
+            "a_star_node = ml_robotics_project.a_star_node_entry_point:main",
+            "ppo_node = ml_robotics_project.ppo_node_entry_point:main",
+            "slam_node = ml_robotics_project.slam_node_entry_point:main",
             "yolo_node = ml_robotics_project.yolo_node_entry_point:main",
             "camera_presenter_node = ml_robotics_project.CameraPresenterNode:main",
+            "camera_node = ml_robotics_project.camera_node_entry_point:main",
         ],
     },
 )

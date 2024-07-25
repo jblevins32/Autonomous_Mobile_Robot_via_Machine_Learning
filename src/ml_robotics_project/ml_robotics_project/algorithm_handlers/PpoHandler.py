@@ -10,8 +10,8 @@ from ml_robotics_project.ml_algorithms.Ppo import Ppo
 class PpoHandler(IPpoHandler):
     """Handler for PPO algorithm. This class accounts for data preprocessing and postprocessing"""
 
-    def __init__(self) -> None:
-        self._ppo = Ppo()
+    def __init__(self, ppo: Ppo) -> None:
+        self._ppo = ppo
 
     def get_cmd_vel(self, odom_msg: Odometry, trajectory_msg: Path) -> Twist:
         # TODO Implement this method

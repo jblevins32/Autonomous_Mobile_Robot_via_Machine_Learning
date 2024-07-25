@@ -4,19 +4,19 @@ from rclpy.qos import QoSPresetProfiles
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry, OccupancyGrid
 
-from ml_robotics_project.INode import INode
+from ml_robotics_project.ros_nodes.INode import INode
 from ml_robotics_project.algorithm_handlers.SlamHandler import SlamHandler
 
 
 class SlamNode(INode):
     """Node that performs SLAM using lidar and odometry data."""
 
-    def __init__(self, node_name: str) -> None:
+    def __init__(self, node_name: str, slam_handler: SlamHandler) -> None:
         super().__init__(node_name)
         self.get_logger().info("SlamNode started")
+        self._slam_handler = slam_handler
 
     def _init_member_variables(self) -> None:
-        self._slam_handler = SlamHandler()
         self._curr_odom_msg = None
         self._curr_lidar_msg = None
 
@@ -65,15 +65,3 @@ class SlamNode(INode):
         msg = self._slam_handler.get_grid_map(self._curr_odom_msg, self._curr_lidar_msg)
         self._debug(f"[grid_map_pub] Publishing: {msg}")
         self.grid_map_pub.publish(msg)
-
-
-def main(args=None) -> None:
-    rclpy.init(args=args)
-    node = SlamNode("slam_node")
-    rclpy.spin(node)
-    node.destroy_node()  # Destroy the node explicitly (optional)
-    rclpy.shutdown()
-
-
-if __name__ == "__main__":
-    main()

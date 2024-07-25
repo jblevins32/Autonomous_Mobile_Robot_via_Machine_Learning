@@ -15,7 +15,7 @@ class INode(Node, metaclass=abc.ABCMeta):
 
         self.declare_parameter(
             "debug_enabled",
-            False,
+            True,
         )
 
         self._init_member_variables()
