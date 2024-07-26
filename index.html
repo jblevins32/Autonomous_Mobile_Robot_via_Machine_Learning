@@ -159,16 +159,16 @@
     <p>The robot's mission can be split into three successive tasks, each associated with specific ML-based algorithms. All-in-all, 4 ML algorithms are implemented: 1 supervised, 2 unsupervised, and 1 reinforcement learning.</p>
         <ul>
             <li><strong>Object detection: Finding the Objective (YOLO).</strong> 
-                In order for the Turtlebot to detect its target, computer vision perception techniques must be implemented. Through the use of the Turtlebot's camera, images of the environment are acquired at specific intervals to detect the presence of the care package--a traffic cone in this example--as well as its location. For that purpose, the team uses the YOLOv8 supervised learning algorithm. Unlike detection algorithms, such as CNN, R-CNN, and Faster R-CNN, this algorithm uses a single pass through a neural network for both the region proposal and the classification. This characteristic makes it faster and enables real-time application. In the context of autonomous vehicles, this quality is a critical requirement.
+                In order for the Turtlebot to detect its target, computer vision perception techniques must be implemented. Through the use of the Turtlebot's camera, images of the environment are acquired at specific intervals to detect the presence of the care package--a traffic cone in this example--as well as its location. For that purpose, the team uses the YOLOv8 supervised learning algorithm <a href="#yolo">[12]</a>. Unlike detection algorithms, such as CNN, R-CNN, and Faster R-CNN, this algorithm uses a single pass through a neural network for both the region proposal and the classification. This characteristic makes it faster and enables real-time application. In the context of autonomous vehicles, this quality is a critical requirement.
                 <br><br>
-                The YOLO algorithm is provided in the <em>Ultralytics</em> Python library. The library provides networks of different sizes, that can be trained using a specific dataset. For the project, the team decided to use the "nano" detection model, which is the smallest of the provided models. Having a smaller model reduces the prediction quality, but it allows faster predictions that can be used in real time. Considering the specific problem of detecting a single class of objects ("cone") and the relatively low importance of the spatial accuracy of the detection, the nano model is considered as the best option.
+                The YOLO algorithm is provided in the <em>Ultralytics</em> Python library<a href="#UltralyticsYOLO2024">[15]</a>. The library provides networks of different sizes, that can be trained using a specific dataset. For the project, the team decided to use the "nano" detection model, which is the smallest of the provided models. Having a smaller model reduces the prediction quality, but it allows faster predictions that can be used in real time. Considering the specific problem of detecting a single class of objects ("cone") and the relatively low importance of the spatial accuracy of the detection, the nano model is considered as the best option.
                 <br><br>
-                Considering the time constraints of the project, the model is trained using a pre-labeled traffic cones dataset. This data is obtained from a prebuilt set of cone images and is split into a training, validation, and a test dataset. The YOLO model is trained using this data with a limit of 100 epochs for the training step.
+                Considering the time constraints of the project, the model is trained using a pre-labeled traffic cones dataset. This data is obtained from a prebuilt set of cone images in <a href="#traffic-cones-4laxg_dataset">[14]</a>and is split into a training, validation, and a test dataset. The YOLO model is trained using this data with a limit of 100 epochs for the training step.
                 <br><br>
-                Once the cone is detected by the Turtlebot camera, frame transformations are to be utilized to teach the location of the care package with respect to the robot's body frame. This location is then sent to the path planning node. Results of training and testing this model are shown in Section 4.
+                Once the cone is detected by the Turtlebot camera, frame transformations are to be utilized to teach the location of the care package with respect to the robot's body frame. This location is then sent to the path planning node. Results of training and testing this model are shown in Results and Discussion Section.
             </li>
             <li><strong>Mapping: Creating the environment map (ICP).</strong> 
-                As seen in Section 3, the measurements need to be processed and combined to form a map of the environment. The method used previously works well for clean data received from the simulation. Real-world data is often noisy, with the LiDAR data including a number of outliers and inaccuracies in encoder readings due to uneven terrain. Thus, ICP can be used to estimate the transform between different point cloud measurements with noisy data.
+                As seen in the Pre-Processing Section, the measurements need to be processed and combined to form a map of the environment. The method used previously works well for clean data received from the simulation. Real-world data is often noisy, with the LiDAR data including a number of outliers and inaccuracies in encoder readings due to uneven terrain. Thus, ICP can be used to estimate the transform between different point cloud measurements with noisy data.
                 <br><br>
                 ICP (Iterative Closest Point) is an algorithm that connects point clouds from two different scans or timeframes to localize the robot and create a map of the environment. The steps in its implementation include:
                 <ol>
@@ -189,7 +189,7 @@
                 </ol>
             </li>
             <li><strong>Path Planning: Finding an optimal path to the objective (PPO).</strong> 
-                Path planning and control execution is the final step of the navigation stack for the autonomous mobile robot. The implementation is as presented in research papers. The team utilizes the Proximal Policy Optimization (PPO), a deep reinforcement learning (RL) algorithm, to determine an optimal policy (network) that will direct the vehicle from start to the objective. Utilization of RL for path planning and control gives mobile vehicles the ability to navigate complex, stochastic environments without explicit programming. The specific use of PPO allows for a continuous (high-dimensional) action space required for continuously moving vehicles. Actor and critic deep neural network (DNN) models are fundamental to the PPO algorithm, wherein the actor defines the policy which gives the probability distribution of possible actions in a given state. On the other hand, the critic gives a value of each state which predicts the expected reward from each state. In parallel, as the actor and critic networks update, the robot improves its ability to choose optimal actions and evaluate potential rewards.
+                Path planning and control execution is the final step of the navigation stack for the autonomous mobile robot. The implementation is as presented in <a href="#PPO_algo">[18]</a>, and <a href="#PPO_algo2">[19]</a>. The team utilizes the Proximal Policy Optimization (PPO), a deep reinforcement learning (RL) algorithm, to determine an optimal policy (network) that will direct the vehicle from start to the objective. Utilization of RL for path planning and control gives mobile vehicles the ability to navigate complex, stochastic environments without explicit programming. The specific use of PPO allows for a continuous (high-dimensional) action space required for continuously moving vehicles. Actor and critic deep neural network (DNN) models are fundamental to the PPO algorithm, wherein the actor defines the policy which gives the probability distribution of possible actions in a given state. On the other hand, the critic gives a value of each state which predicts the expected reward from each state. In parallel, as the actor and critic networks update, the robot improves its ability to choose optimal actions and evaluate potential rewards.
                 <br><br>
                 Initialization of the PPO framework begins with selecting the appropriate inputs to the algorithm. Feature engineering is utilized by reducing the LiDAR data to the 20 closest ranges. This ensures the LiDAR data does not overwhelm the other features. Additional inputs are 5 odometry data points: linear velocity, angular velocity, and robot x position, y position, and angle (v, ω, x, y, θ).
                 <br><br>
@@ -215,13 +215,13 @@ L_value = 0.5E[A^2]
                 After the maximum steps have passed, within the same episode, the policy is updated according to the loss defined in the equation above and the next training episode begins. Rewards from each action implementation are as follows:
                 <br><br>
                 <pre>
-                <code>
-R = R_collision + R_goal + R_non-stationary + R_flip
-R_collision = - lr_collision / e^(mean(obstacle distance)) → Punishment for being closer to obstacles
-R_goal = lr_goal / e^(mean(goal distance)) → Reward being closer to the goal
-R_non-stationary = v → Reward being non-stationary
-R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
-                </code>
+                    <code>
+                        R = R_collision + R_goal + R_non-stationary + R_flip
+                        R_collision = - lr_collision / e^(mean(obstacle distance)) → Punishment for being closer to obstacles
+                        R_goal = lr_goal / e^(mean(goal distance)) → Reward being closer to the goal
+                        R_non-stationary = v → Reward being non-stationary
+                        R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
+                    </code>
                 </pre>
                 <br>
                 where lr is learning rates for various rewards and punishments. The exponentials are taken in order to greater punish or reward as the robot gets closer to obstacles or the goal, respectively; otherwise, these rewards and punishments provide too much feedback further from the obstacles or objectives, making the robot afraid to even move from its starting position. These functions are shown in the figure below where the goal function is set to give a higher reward with respect to the obstacle punishment in order to greater promote getting to the objective.
@@ -246,7 +246,7 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
 </div>
 
 <div id="sec-results">
-    <h2 id="sec-results" class="w3-text-indigo">Results and Discussion</h2>
+    <h2 class="w3-text-indigo">Results and Discussion</h2>
         <p>The goal of this project is to autonomously navigate a mobile robot to an objective with ML model scoring metrics as in Section <a href="#subsec-scoring">3.2</a>. The robot maps its environment, locates itself within the environment, identifies its target, and then attempts to move to its target while avoiding collisions. However, the PPO reinforcement learning algorithm converged on a non-ideal solution, so a future step is to improve this step in the project pipeline.</p>
 
         <h3 id="subsec-scoring">ML Model Scoring, Results, and Discussion</h3>
@@ -334,7 +334,15 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
             </li>
 
             <li><strong>Path Planning (PPO).</strong>
-                <p>The PPO algorithm is trained over 1000 episodes with each episode lasting 10,000 time steps. Each training occurs over 10 epochs for each episode. Learning rates for the rewards are set as $lr_{collision} = 10, lr_{goal} = 50, and lr_{flip} = 5$. The rewards from training are as shown in Figure 15.</p>
+                <p>The PPO algorithm is trained over 1000 episodes with each episode lasting 10,000 time steps. Each training occurs over 10 epochs for each episode. Learning rates for the rewards are set as 
+                <ul>
+                    <li><code>lr<sub>collision</sub> = 10</code></li>
+                    <li><code>lr<sub>goal</sub> = 50</code></li>
+                    <li><code>lr<sub>flip</sub> = 5</code></li>
+                </ul>
+                The rewards from training are as shown in Figure 15.</p>
+
+
 
                 <div class="figure">
                     <img src="figs/reward_plot.png" alt="PPO Training Rewards per Episode">
