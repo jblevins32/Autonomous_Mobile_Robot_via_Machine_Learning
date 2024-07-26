@@ -1,3 +1,7 @@
+"""Launch file for the relative position finder node.
+
+This launch file starts "yolo_node" and "pos_finder_node" when invoked."""
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import (

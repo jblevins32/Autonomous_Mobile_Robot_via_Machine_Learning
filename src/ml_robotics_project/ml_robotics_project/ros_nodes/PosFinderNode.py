@@ -1,3 +1,6 @@
+"""This module contains the PosFinderNode class.
+
+This node uses 2D lidar and bounding box data to find the 3D position of an object."""
 import rclpy
 import rclpy.logging
 from geometry_msgs.msg import Point

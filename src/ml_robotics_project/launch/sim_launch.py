@@ -1,3 +1,7 @@
+"""Launch file for the simulation environment.
+
+This launch file starts the turtlebot3 simulation environment and the relative_pos_finder_launch file when invoked."""
+
 import os
 from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
