@@ -122,35 +122,35 @@
 <div id="sec-methods">
     <h2 class="w3-text-indigo">Methods</h2>
     <h3>Implementation Framework</h3>
-    <p>This project utilizes the Robot Operating System 2 (ROS2) on the Turtlebot's Ubuntu-OS Raspberry Pi SBU in order to run both classical and ML-based python scripts. These scripts, known as nodes in the ROS2 framework, communicate with each other over topics, services, and actions. Topics are one-way data streaming based, services are query based, and actions are for longer, feedback based communication. The framework for this project is demonstrated in Figure 1 where blue nodes represent the ML-based algorithms. Specifically, the YoloNode uses supervised learning to classify the care package, PosFinderNode uses unsupervised clustering to match the classification and 2D lidar data to a single instance of the care package, and the PpoNode uses reinforcement learning to send velocity commands to the ControllerNode. Further details of these ML-based algorithms are explained in Section 3.</p>
+    <p>This project utilizes the Robot Operating System 2 (ROS2) on the Turtlebot's Ubuntu-OS Raspberry Pi SBU in order to run both classical and ML-based python scripts. These scripts, known as nodes in the ROS2 framework, communicate with each other over topics, services, and actions. Topics are one-way data streaming based, services are query based, and actions are for longer, feedback based communication. The framework for this project is demonstrated in Figure 2 where blue nodes represent the ML-based algorithms. Specifically, the YoloNode uses supervised learning to classify the care package, PosFinderNode uses unsupervised clustering to match the classification and 2D lidar data to a single instance of the care package, and the PpoNode uses reinforcement learning to send velocity commands to the ControllerNode. Further details of these ML-based algorithms are explained in Section 3.</p>
 
     <figure>
         <img src="figs/ROS_framework.png" alt="ROS2 Framework" style="width:100%;">
-        <figcaption>Figure 1: ROS2 Framework</figcaption>
+        <figcaption>Figure 2: ROS2 Framework</figcaption>
     </figure>
 
-    <p>The nodes in Figure 1 begin to run when the system's launch file is executed. The Turtlebot sensors continuously publish data over topics to the appropriate subscriber nodes. These subscriber nodes subsequently process the data using various algorithms and pass it on to the respective next node. Ultimately, this sends velocity commands to the robot, causing it to navigate towards the care package. By using the ROS2 framework, this project can be easily reused and extended with other packages in the vast ROS2 ecosystem.</p>
+    <p>The nodes in Figure 2 begin to run when the system's launch file is executed. The Turtlebot sensors continuously publish data over topics to the appropriate subscriber nodes. These subscriber nodes subsequently process the data using various algorithms and pass it on to the respective next node. Ultimately, this sends velocity commands to the robot, causing it to navigate towards the care package. By using the ROS2 framework, this project can be easily reused and extended with other packages in the vast ROS2 ecosystem.</p>
 
-    <p>The EncoderNode, LidarNode, and SlamNode are already implemented by the standard Turtlebot3 kit. It is the CameraNode, YoloNode, PosFinderNode, and PpoNode that are implemented for this project. The software architecture is described by the UML class diagram in Figure 2, which attempts to follow the Clean architecture style.</p>
+    <p>The EncoderNode, LidarNode, and SlamNode are already implemented by the standard Turtlebot3 kit. It is the CameraNode, YoloNode, PosFinderNode, and PpoNode that are implemented for this project. The software architecture is described by the UML class diagram in Figure 3, which attempts to follow the Clean architecture style.</p>
 
     <figure>
         <img src="figs/uml_class_diagram.png" alt="UML class diagram representing the software architecture for this project. The dependency between layers points in only one direction, preventing cyclic dependencies. This architecture allows the top layer of software to be implemented without any knowledge of ROS2." style="width:100%;">
-        <figcaption>Figure 2: UML class diagram representing the software architecture for this project. The dependency between layers points in only one direction, preventing cyclic dependencies. This architecture allows the top layer of software to be implemented without any knowledge of ROS2.</figcaption>
+        <figcaption>Figure 3: UML class diagram representing the software architecture for this project. The dependency between layers points in only one direction, preventing cyclic dependencies. This architecture allows the top layer of software to be implemented without any knowledge of ROS2.</figcaption>
     </figure>
     
     <h3>Data Pre-Processing</h3>
-    <p>The first step in ML implementation with messy sensor data is to clean the data, transforming it into useful information. From a robot simulation using Gazebo in ROS2, a simple room with 9 obstacles is generated, and a Turtlebot is controlled around the room. The LiDAR data capture, which has features listed in Section 1, is demonstrated in Figure 1 where the blue lines are LiDAR lasers.</p>
+    <p>The first step in ML implementation with messy sensor data is to clean the data, transforming it into useful information. From a robot simulation using Gazebo in ROS2, a simple room with 9 obstacles is generated, and a Turtlebot is controlled around the room. The LiDAR data capture, which has features listed in Section 1, is demonstrated in Figure 4 where the blue lines are LiDAR lasers.</p>
 
     <figure>
         <img src="figs/simulation.png" alt="Gazebo Simulation Environment" style="width:50%;">
-        <figcaption>Figure 1: Gazebo Simulation Environment</figcaption>
+        <figcaption>Figure 4: Gazebo Simulation Environment</figcaption>
     </figure>
 
-    <p>The team must clean, combine, and pre-process the data for it to be usable. The LiDAR data consists of 360 range points, one for each degree around the vertical axis of the robot frame, and includes multiple ∞ values (invalid data). This data is replaced with <i>NaN</i> values, which is better handled by the utilized ML libraries. The raw data also consists of the list of distance measurements taken in a single frame under a single feature. To make it easier to read and utilize the measurements, each of the distances is separated and stored as one feature each. Since the frequency at which the LiDAR and encoder sensors record measurements differs, the two datasets are matched according to their closest timestamps and unnecessary data is deleted. Lastly, the LiDAR data is processed into a more usable format, that is, point clouds. The raw LiDAR data consists of angle and distance measurements taken in the sensor coordinate system. The measurements are first converted from polar coordinates to cartesian coordinates in the robot's frame. The odometry measurements are then used to shift the data into the world coordinate system. Finally, combining the measurements from all timestamps, the map of the environment is represented in Figure 2. While this map technically solves the mapping problem, this project utilizes an ML algorithm to piece together the map from the noisy real-world LiDAR and encoder data. This implementation tests the validity of unsupervised learning for mapping to be used in more complicated environments.</p>
+    <p>The team must clean, combine, and pre-process the data for it to be usable. The LiDAR data consists of 360 range points, one for each degree around the vertical axis of the robot frame, and includes multiple ∞ values (invalid data). This data is replaced with <i>NaN</i> values, which is better handled by the utilized ML libraries. The raw data also consists of the list of distance measurements taken in a single frame under a single feature. To make it easier to read and utilize the measurements, each of the distances is separated and stored as one feature each. Since the frequency at which the LiDAR and encoder sensors record measurements differs, the two datasets are matched according to their closest timestamps and unnecessary data is deleted. Lastly, the LiDAR data is processed into a more usable format, that is, point clouds. The raw LiDAR data consists of angle and distance measurements taken in the sensor coordinate system. The measurements are first converted from polar coordinates to cartesian coordinates in the robot's frame. The odometry measurements are then used to shift the data into the world coordinate system. Finally, combining the measurements from all timestamps, the map of the environment is represented in Figure 5. While this map technically solves the mapping problem, this project utilizes an ML algorithm to piece together the map from the noisy real-world LiDAR and encoder data. This implementation tests the validity of unsupervised learning for mapping to be used in more complicated environments.</p>
 
     <figure>
         <img src="figs/lidar_map.png" alt="Lidar Map" style="width:50%;">
-        <figcaption>Figure 2: Lidar Map</figcaption>
+        <figcaption>Figure 5: Lidar Map</figcaption>
     </figure>
 
     <p>The LiDAR must be alternately pre-processed for the path planning and control implementation. Since the reinforcement learning algorithm utilized for these operations bases its reward functions on this LiDAR data, the ∞ values are replaced with the maximum allowable LiDAR range readings of 10. This data cleaning allows the networks to understand that there are no nearby obstacles in the direction of that data point. More explanation for this reasoning is given in Section 3.</p>
@@ -226,7 +226,10 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
                 <br>
                 where lr is learning rates for various rewards and punishments. The exponentials are taken in order to greater punish or reward as the robot gets closer to obstacles or the goal, respectively; otherwise, these rewards and punishments provide too much feedback further from the obstacles or objectives, making the robot afraid to even move from its starting position. These functions are shown in the figure below where the goal function is set to give a higher reward with respect to the obstacle punishment in order to greater promote getting to the objective.
                 <br><br>
-                <img src="figs/reward_function.png" alt="Goal and Collision Reward Functions" style="width:100%;">
+                <figure>
+                    <img src="figs/reward_function.png" alt="Goal and Collision Reward Functions" style="width:100%;">
+                    <figcaption>Figure 6: Goal and Collision Reward Functions</figcaption>
+                </figure>
                 <br><br>
                 Policy updating is the core of any RL algorithm. The policy update steps are as follows which occur after each training episode and the buffer is filled with information. This loop occurs for a set number of training epochs:
                 <ol>
@@ -243,52 +246,52 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
 </div>
 
 <div id="sec-results">
-    <h2 id="sec-results">Results and Discussion</h2>
+    <h2 id="sec-results" class="w3-text-indigo">Results and Discussion</h2>
         <p>The goal of this project is to autonomously navigate a mobile robot to an objective with ML model scoring metrics as in Section <a href="#subsec-scoring">3.2</a>. The robot maps its environment, locates itself within the environment, identifies its target, and then attempts to move to its target while avoiding collisions. However, the PPO reinforcement learning algorithm converged on a non-ideal solution, so a future step is to improve this step in the project pipeline.</p>
 
         <h3 id="subsec-scoring">ML Model Scoring, Results, and Discussion</h3>
         <ul>
             <li><strong>Object detection algorithm (YOLO).</strong>
-                <p>The YOLOv8 model is trained on the training dataset, with a limit set to 100 epochs. The convergence is evaluated based on two loss metrics: one related to the ability of the model to accurately detect the object on the image and draw the corresponding box (<em>box_loss</em>), and another related to the classification capability (<em>cls_loss</em>). The box loss is calculated based on the CIoU loss function, that accounts for the overlap between the predicted actual boxes, but also the difference in aspect ratio and the distance between centers, while the classification loss is based on cross-entropy. These two metrics were tracked for the training and validation datasets, and are plotted on Figure 1. As one can see, the validation losses were still slowly decreasing at the end of the training, which suggests that the model was still improving and would have likely benefited from a higher number of epochs. However, the small slopes also suggests that the difference would not have been major and that this final model should be a good compromise between training duration and performance. This is confirmed by the high precision, recall, and mAP50 highlighted in Figure 1. For that specific problem, the mAP50 corresponds to the area under the precision-recall curve calculated at an intersection over union (IoU) threshold of 0.50. The IoU corresponds to the ratio between the overlap of the predicted box and ground truth box, and the area of the union of these two boxes. The high value of these metrics, around 0.85-0.9, shows that the trained model performs well on the validation set.</p>
+                <p>The YOLOv8 model is trained on the training dataset, with a limit set to 100 epochs. The convergence is evaluated based on two loss metrics: one related to the ability of the model to accurately detect the object on the image and draw the corresponding box (<em>box_loss</em>), and another related to the classification capability (<em>cls_loss</em>). The box loss is calculated based on the CIoU loss function, that accounts for the overlap between the predicted actual boxes, but also the difference in aspect ratio and the distance between centers, while the classification loss is based on cross-entropy. These two metrics were tracked for the training and validation datasets, and are plotted on Figure 7. As one can see, the validation losses were still slowly decreasing at the end of the training, which suggests that the model was still improving and would have likely benefited from a higher number of epochs. However, the small slopes also suggests that the difference would not have been major and that this final model should be a good compromise between training duration and performance. This is confirmed by the high precision, recall, and mAP50 highlighted in Figure 7. For that specific problem, the mAP50 corresponds to the area under the precision-recall curve calculated at an intersection over union (IoU) threshold of 0.50. The IoU corresponds to the ratio between the overlap of the predicted box and ground truth box, and the area of the union of these two boxes. The high value of these metrics, around 0.85-0.9, shows that the trained model performs well on the validation set.</p>
 
-                <p>Each prediction of the model is associated with the probability that the object is a cone. Depending on the detection threshold used on this probability to accept or reject the detection, the performance of the model changes, as can be seen on Figure 2 which shows the evolution of the model's precision, recall, and F1 score for different confidence thresholds. With no surprise, the highest precision is achieved using a higher confidence threshold, since keeping the prediction with only high probability of being cones reduces the risk of false positive. In the mean time a higher threshold also reduces the recall, since fewer cones are correctly classified due to their probability being lower than the threshold. In order to find the best compromise, one can use the F1 score that combines both metrics, and find the threshold value that maximizes it. In this specific case, the optimum confidence threshold seems to be 0.467. The corresponding precision is 0.88, and the recall is 0.82. On the precision-recall curve, this point corresponds to the top right corner of the curve, giving the optimal compromise (Figure 3).</p>
+                <p>Each prediction of the model is associated with the probability that the object is a cone. Depending on the detection threshold used on this probability to accept or reject the detection, the performance of the model changes, as can be seen on Figure 9 which shows the evolution of the model's precision, recall, and F1 score for different confidence thresholds. With no surprise, the highest precision is achieved using a higher confidence threshold, since keeping the prediction with only high probability of being cones reduces the risk of false positive. In the mean time a higher threshold also reduces the recall, since fewer cones are correctly classified due to their probability being lower than the threshold. In order to find the best compromise, one can use the F1 score that combines both metrics, and find the threshold value that maximizes it. In this specific case, the optimum confidence threshold seems to be 0.467. The corresponding precision is 0.88, and the recall is 0.82. On the precision-recall curve, this point corresponds to the top right corner of the curve, giving the optimal compromise (Figure 8).</p>
 
-                <p>Once the model created and validated, it was tested to detect a cone on a few custom pictures to assess its performance and limitations. Overall, the detection works great in cases where the cone is mostly visible, with the model giving high prediction probabilities. However, the model starts to show some limitations when it comes to cases for which most of the cone is obstructed. This issue likely stems from the training dataset which mainly contains isolated cones. Better results could likely be obtained by creating a custom dataset with partially hidden cones, and training the algorithm on this data. However, with the time limitations of this project in mind, the model performs sufficiently well for cone detection. Several examples are shown in Figure 4, and a working example within the ROS pipeline is shown in Figure 5.</p>
+                <p>Once the model created and validated, it was tested to detect a cone on a few custom pictures to assess its performance and limitations. Overall, the detection works great in cases where the cone is mostly visible, with the model giving high prediction probabilities. However, the model starts to show some limitations when it comes to cases for which most of the cone is obstructed. This issue likely stems from the training dataset which mainly contains isolated cones. Better results could likely be obtained by creating a custom dataset with partially hidden cones, and training the algorithm on this data. However, with the time limitations of this project in mind, the model performs sufficiently well for cone detection. Several examples are shown in Figure 10, and a working example within the ROS pipeline is shown in Figure 11.</p>
 
                 <div class="figure">
                     <img src="figs/yolo_metrics/results.png" alt="Evaluation metrics evolution across training">
-                    <p>Figure 1: Evaluation metrics evolution across training. The x axis is labeled in epochs.</p>
+                    <p>Figure 7: Evaluation metrics evolution across training. The x axis is labeled in epochs.</p>
                 </div>
 
                 <div class="figure">
                     <img src="figs/yolo_metrics/PR_curve.png" alt="Precision-Recall curve">
-                    <p>Figure 2: Precision-Recall curve. The optimal point on the top right corner corresponds to a confidence threshold of 0.467.</p>
+                    <p>Figure 8: Precision-Recall curve. The optimal point on the top right corner corresponds to a confidence threshold of 0.467.</p>
                 </div>
 
                 <div class="figure">
                     <img src="figs/yolo_metrics/P_curve.png" alt="Precision curve">
-                    <p>Figure 3a: Precision curve</p>
+                    <p>Figure 9a: Precision curve</p>
                 </div>
                 <div class="figure">
                     <img src="figs/yolo_metrics/R_curve.png" alt="Recall curve">
-                    <p>Figure 3b: Recall curve</p>
+                    <p>Figure 9b: Recall curve</p>
                 </div>
                 <div class="figure">
                     <img src="figs/yolo_metrics/F1_curve.png" alt="F1 curve">
-                    <p>Figure 3c: F1 curve</p>
+                    <p>Figure 9c: F1 curve</p>
                 </div>
                 <div class="figure">
-                    <p>Figure 3: Precision, recall, and F1 score for different confidence thresholds.</p>
+                    <p>Figure 9: Precision, recall, and F1 score for different confidence thresholds.</p>
                 </div>
 
                 <div class="figure">
                     <img src="figs/conde_detection.png" alt="Examples of detection tests">
-                    <p>Figure 4: Examples of detection tests. On the top, the cone is mostly visible and the model is able to detect it with high probability. On the bottom left, the cone was mostly hidden but was still detected with a probability of 0.5. On the bottom right, the model was unable to detect the cone.</p>
+                    <p>Figure 10: Examples of detection tests. On the top, the cone is mostly visible and the model is able to detect it with high probability. On the bottom left, the cone was mostly hidden but was still detected with a probability of 0.5. On the bottom right, the model was unable to detect the cone.</p>
                 </div>
 
                 <div class="figure">
                     <img src="figs/yolo_cone_detection_sim.png" alt="Cone detection implemented in the ROS pipeline and simulated in Gazebo">
-                    <p>Figure 5: Cone detection implemented in the ROS pipeline and simulated in Gazebo.</p>
+                    <p>Figure 11: Cone detection implemented in the ROS pipeline and simulated in Gazebo.</p>
                 </div>
             </li>
 
@@ -297,7 +300,7 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
 
                 <div class="figure">
                     <img src="figs/icp_map.png" alt="Sample ICP between timeframes 0 and 150">
-                    <p>Figure 6: Sample ICP between timeframes 0 and 150.</p>
+                    <p>Figure 12: Sample ICP between timeframes 0 and 150.</p>
                 </div>
 
                 <p>To compare the two methods, RMSE values were calculated between the two matched point clouds. The LiDAR processing using encoders as seen in Section <a href="#sec-preprocessing">2</a> yielded a RMSE value of 0.228, whereas the ICP method gave 0.232. As seen from both the map as well as the RMSE values, the ICP algorithm produced more error than using only encoder readings.</p>
@@ -310,39 +313,39 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
             </li>
 
             <li><strong>Mapping Algorithm DBSCAN.</strong>
-                <p>DBSCAN can be used to cluster obstacles together to help us detect them in the environment and filter noise. As a sample test, we used our DBSCAN implementation with Eps, MinPts set to 0.7 and 3, respectively. In Figure 7, we see that the obstacles and the walls were classified correctly.</p>
+                <p>DBSCAN can be used to cluster obstacles together to help us detect them in the environment and filter noise. As a sample test, we used our DBSCAN implementation with Eps, MinPts set to 0.7 and 3, respectively. In Figure 13, we see that the obstacles and the walls were classified correctly.</p>
 
                 <p>The next step in our implementation is to experiment with multiple model parameters:</p>
                 <ul>
                     <li>Eps: 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0</li>
                     <li>MinPts: 3,4,5,6,7,8,9,10</li>
                 </ul>
-                <p>To compare the cluster quality, we used the Silhouette Coefficient score. After testing out the different parameter pairs, the best pair was eps=0.1, and MinPts=3 with a Silhouette Coefficient score of -0.21215831709613261. In Figure 8, we see the optimized clustering result.</p>
+                <p>To compare the cluster quality, we used the Silhouette Coefficient score. After testing out the different parameter pairs, the best pair was eps=0.1, and MinPts=3 with a Silhouette Coefficient score of -0.21215831709613261. In Figure 14, we see the optimized clustering result.</p>
 
                 <div class="figure">
                     <img src="figs/DBSCAN_e07_n3.png" alt="Sample DBSCAN Clusters (eps=0.7 MinPts=3)">
-                    <p>Figure 7: Sample DBSCAN Clusters (eps=0.7 MinPts=3).</p>
+                    <p>Figure 13: Sample DBSCAN Clusters (eps=0.7 MinPts=3).</p>
                 </div>
 
                 <div class="figure">
                     <img src="figs/optimal_DBSCAN_clustering.png" alt="Optimized DBSCAN Clusters (eps=0.7 MinPts=3)">
-                    <p>Figure 8: Optimized DBSCAN Clusters (eps=0.1 MinPts=3).</p>
+                    <p>Figure 14: Optimized DBSCAN Clusters (eps=0.1 MinPts=3).</p>
                 </div>
             </li>
 
             <li><strong>Path Planning (PPO).</strong>
-                <p>The PPO algorithm is trained over 1000 episodes with each episode lasting 10,000 time steps. Each training occurs over 10 epochs for each episode. Learning rates for the rewards are set as $lr_{collision} = 10, lr_{goal} = 50, and lr_{flip} = 5$. The rewards from training are as shown in Figure 9.</p>
+                <p>The PPO algorithm is trained over 1000 episodes with each episode lasting 10,000 time steps. Each training occurs over 10 epochs for each episode. Learning rates for the rewards are set as $lr_{collision} = 10, lr_{goal} = 50, and lr_{flip} = 5$. The rewards from training are as shown in Figure 15.</p>
 
                 <div class="figure">
                     <img src="figs/reward_plot.png" alt="PPO Training Rewards per Episode">
-                    <p>Figure 9: PPO Training Rewards per Episode.</p>
+                    <p>Figure 15: PPO Training Rewards per Episode.</p>
                 </div>
 
                 <p>Typically, a transient period should be visible in the rewards before they settle at a steady state value. As seen in the image, the training did not replicate this desired behavior and instead learned over time that spinning in place at the starting location is the best method for optimizing its reward. As a result, the PPO algorithm did not perform as desired, but future tuning of rewards and loss calculations could provide better results. Due to the extensive training times, additional tests of tuned parameters is not viable for this project. When the non-optimal actor policy is deployed to the robot, it somewhat navigates, but still hits obstacles, tipping it over. A few training episodes reached the goal as indicated by the spikes in the reward figure, but not enough to train the model to perform that set of actions consistently.</p>
             </li>
         </ul>
 
-        <h3>Next Steps</h3>
+        <h3 class="w3-text-indigo">Next Steps</h3>
         <p>The algorithms were not able to be tested on a physical robot or completely optimized due to time constraints. For this reason, next steps include:</p>
         <ul>
             <li>Build physical test environment</li>
@@ -352,11 +355,11 @@ R_flip = - lr_flip if roll or pitch > ρ → Punishment for flipping over
         </ul>
         <div class="figure">
             <img src="figs/gantt.png" alt="Team Gantt Chart">
-            <p>Figure 10: Team Gantt Chart</p>
+            <p>Figure 16: Team Gantt Chart</p>
         </div>
         <table class="table">
             <caption>Table 1: Team Contributions</caption>
-            <thead>
+            <thead class="w3-light-blue">
                 <tr>
                     <th>Name</th>
                     <th>Final Report Contributions</th>
