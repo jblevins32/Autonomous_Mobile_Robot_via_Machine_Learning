@@ -29,8 +29,9 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
     - `gantt.png`: GANTT chart
     - `objective_fig.png`: Project objective graph
 - `preprocessing`: Preprocessing of data
-    - `lidar_preprocessing`: Notebook containing the pipeline to generate the radar graph
-    - `cluster_obhects.ipynb`: Python script that uses the raw lidar data and find the optimal parameters to cluster
+    - `lidar_preprocessing.ipynb`: Notebook containing the pipeline to generate the radar graph
+    - `cluster_objects.ipynb`: Notebook that uses the raw lidar data and find the optimal parameters to cluster
+    - `icp.ipynb`: Notebook that implements ICP algorithm
     - `DBSCAN.py`: Python script containing the DBSCAN class and functions
     - `radar_plot.gif`: Image of the simulation data from the LIDAR sensor
     - `sample_DBSCAN_clustering.png`: Figure of the sample DBSCAN clusters
