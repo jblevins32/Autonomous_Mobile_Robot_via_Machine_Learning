@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CS 7641 Project</title>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: sans-serif, Arial;
+            /* margin: 1in; */
+        }
+        /* h1, h2, h3 {
+            color: "w3-indigo";
+        } */
+        figure {
+            text-align: center;
+            margin: 20px 0;
+            width: auto;
+        }
+        img {
+            width: 100%;
+        }
+        figcaption {
+            font-size: 0.9em;
+        }
+        table {
+            width: auto;
+            min-width: 75%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            margin-top: 0.75in;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        /* th {
+            background-color: #f2f2f2;
+        } */
+        .heading {
+            text-align: center;
+        }
+        #sec-intro, #sec-data, #sec-problem, #sec-methods, #sec-results, #sec-extras, footer {
+            margin: 0.75in
+        }
+        footer div {
+            margin-top: 10px;
+        }
+        /* #sec-extras {
+            
+        } */
+    </style>
+</head>
+<body>
+
+<!--From W3.CSS template-->
+<div class="navbar">
+    <div class="w3-bar w3-indigo w3-card w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+        <a href="#sec-intro" class="w3-bar-item w3-button w3-padding-large w3-hover-white">Introduction</a>
+        <a href="#sec-data" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Dataset</a>
+        <a href="#sec-problem" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Problem</a>
+        <a href="#sec-methods" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Methods</a>
+        <a href="#sec-results" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Results</a>
+    </div>
+</div>
+
+<div class="heading">
+    <h1>Autonomous Mobile Robot via Machine Learning</h1>
+    <p>Jacob Blevins, Evan Boekweg, Ilias Baali, Anupama Nair, and Pierros-Christos Skafidas</p>
+</div>
+
+<div id="sec-intro">
+    <h2 class="w3-text-indigo">Introduction/Background</h2>
+    <p>Autonomous vehicles play a significant role in today's AI boom <a href="#hottopic">[1]</a>. From perception and localization to path planning and system control, the navigation stack for autonomous vehicles utilizes a multitude of complex algorithms <a href="#autonomous_review">[2]</a>. While widely-used classic algorithms exist for robots in deterministic environments, such as <i>A*</i> for path planning and linear quadratic regulators (LQR) for optimal control, machine learning (ML) algorithms are required for robots whose environments are highly stochastic. ML-based methods can provide improved results for the navigation stack when compared to their classical counterparts by assisting in constraint management, system analysis, disturbance management<a href="#control_CNN">[3]</a>, etc. ML algorithms are commonly applied in highly stochastic environments faced by autonomous vehicles such as Tesla <a href="#tesla">[4]</a> and Waymo <a href="#waymo">[5]</a> self-driving vehicles.</p>
+    <p>The objective of this project is to develop ML-based algorithms for an autonomous, mobile robot that can navigate to an objective (defined as a care package) as in Figure 1. The chosen robot is a non-holonomic Turtlebot3; this robot utilizes two unilateral motors for motion control and includes LiDAR, encoder, and camera sensors. Similar projects for intelligent mobile robots have been performed in <a href="#autocontrol">[6]</a> and <a href="#mobilecontrol">[7]</a> where the authors utilize deep reinforcement learning to control vehicle motion; both experiments notice improved control efficiency in terms of time, energy, and stability.</p>
+    <figure>
+        <img src="figs/objective_fig.png" alt="Mobile Robot Objective" style="width: 40%;">
+        <figcaption>Figure 1: Mobile Robot Objective</figcaption>
+    </figure>
+</div>
+
+<div id="sec-data">
+    <h2 class="w3-text-indigo">Dataset</h2>
+    <p>The Turtlebot's sensors are vital to the ML algorithm development as their data is utilized to train the ML models that determine the robot's actions. This data is recognized as follows:</p>
+    <p>Datasets are collected by the Turtlebot's sensors:</p>
+    <ul>
+        <li>LiDAR (LDS-02 <a href="#lds02">[8]</a>)
+            <ul>
+                <li>Angle increment</li>
+                <li>Distance measurements at each angle</li>
+            </ul>
+        </li>
+        <li>Camera (Raspberry Pi Camera <a href="#camera">[9]</a>)
+            <ul>
+                <li>Video (1080p pixel image stream)</li>
+            </ul>
+        </li>
+        <li>Wheel Encoder (XL430-W250 <a href="#encoders">[10]</a>)
+            <ul>
+                <li>Positions</li>
+                <li>Velocities</li>
+                <li>Orientations</li>
+                <li>Angular velocities</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<div id="sec-problem">
+    <h2 class="w3-text-indigo">Problem Definition</h2>
+    <p>For robots to make decisions in stochastic environments, the aforementioned operations require methods for understanding the random variables and conditions presented to them. In the case of this project, for perception/object detection, the target objective needs to be identified. In this case, the objective is a care package represented by an orange traffic cone; once the care package is detected, its location must be estimated with respect to the robot's body frame and marked as the goal. Next, the environment must be mapped, containing local obstacle information, and path planning should be generated from the starting location to the care package according to the mapped environment. Finally, system control should lead the mobile robot to the objective. These objectives are to be completed with a subset of navigation methods, utilizing ML-based algorithms where possible.</p>
+</div>
+<div id="sec-methods">
+    <h2 class="w3-text-indigo">Methods</h2>
+    <h3>Implementation Framework</h3>
+    <p>This project utilizes the Robot Operating System 2 (ROS2) on the Turtlebot's Ubuntu-OS Raspberry Pi SBU in order to run both classical and ML-based python scripts. These scripts, known as nodes in the ROS2 framework, communicate with each other over topics, services, and actions. Topics are one-way data streaming based, services are query based, and actions are for longer, feedback based communication. The framework for this project is demonstrated in Figure 1 where green nodes represent the ML-based algorithms. For this project, the Turtlebot sensors will send data over topics to the appropriate nodes, where algorithms will process the data and pass it on to the respective next node. Ultimately, this will send velocity commands to the robot, causing it to execute navigation towards the care package. By using the ROS2 framework, this project can be easily reused and extended with other packages in the vast ROS2 ecosystem.</p>
+    <figure>
+        <img src="figs/ros_graph.png" alt="ROS2 Framework" style="width: 60%;">
+        <figcaption>Figure 2: ROS2 Framework</figcaption>
+    </figure>
+    <h3>Data Pre-Processing</h3>
+    <p>From a robot simulation using Gazebo in ROS2, a simple room with 9 obstacles is generated, and a Turtlebot is controlled around the room. The LiDAR data capture who's features are listed in Dataset is demonstrated in Figure 3.</p>
+    <figure>
+        <img src="figs/simulation.png" alt="Simulation map" style="width: 40%;">
+        <figcaption>Figure 3: Simulation map</figcaption>
+    </figure>
+    To attain comprehensive data for ML algorithms, the team must clean, combine, and pre-process the data. The LiDAR data consists of multiple &infin; values (invalid data). This data is replaced with <i>NaN</i> values, which is better handled by the utilized ML libraries. The raw data also consists of the list of distance measurements taken in a single frame under a single feature. To make it easier to read and utilize the measurements, each of the distances is separated and stored as one feature each. Since the frequency at which the LiDAR and encoder sensors record measurements differs, the two datasets are matched according to their closest timestamps and unnecessary data is deleted.
+    Lastly, the LiDAR data is processed into a more usable format, that is, point clouds. The raw LiDAR data consists of angle and distance measurements taken in the sensor coordinate system. The measurements are first converted from polar coordinates to cartesian coordinates in the robot's frame. The odometry measurements are then used to shift the data into the world coordinate system.
+    Finally, combining the measurements from all timestamps, the map of the environment is represented in Figure 4. While this map technically solves the mapping problem, this project will utilize an ML algorithm to piece together the map from the noisy real-world LiDAR and encoder data. This implementation will test the validity of unsupervised learning for mapping to be used in more complicated environments.
+    <figure>
+        <img src="figs/lidar_map.png" alt="Lidar Map" style="width: 40%;">
+        <figcaption>Figure 4: Lidar Map</figcaption>
+    </figure>
+    <p>An additional data cleaning method to be utilized is Kalman filtering. Kalman filtering is utilized to estimate system states given noisy data. Assuming a Gaussian distribution of sensor data, the Kalman filter quickly computes estimated states in the presence of noise using sensor measurements and predicted states <a href="#KalmanFilter1D">[11]</a>. This sensor noise stems from system vibrations and imperfect sensors and models. This data processing method is not yet implemented, but will be included in the final report.</p>
+
+    <h3>ML Algorithms</h3>
+    <p>The robot's mission can be split into three successive tasks, each associated with a specific ML-based algorithm:</p>
+    <ul>
+        <li>
+            <b>Object detection: Finding the objective (YOLO).</b> In order for the Turtlebot to detect its target, computer vision techniques must be implemented. Through the use of the Turtlebot's camera, images of the environment are acquired at specific intervals to detect the presence of the target--a traffic cone in this example--as well as its location. For that purpose, the team uses the YOLOv8 supervised learning algorithm <a href="#yolo">[12]</a>. Unlike detection algorithms, such as CNN, R-CNN, and Faster R-CNN, this algorithm uses a single pass through a neural network for both the region proposal and the classification. This characteristic makes it faster and enables real-time application. In the context of autonomous vehicles, this quality is a critical requirement.
+            <p>The YOLO algorithm is provided in the <i>Ultralytics</i> Python library <a href="#UltralyticsYOLO2024">[13]</a>. The library provides networks of different sizes, that can be trained using a specific dataset. For the project, the team decided to use the "nano" detection model, which is the smallest of the provided models. Having a smaller model reduces the prediction quality, but it allows faster predictions that can be used in real time. Considering the specific problem of detecting a single class of objects ("cone") and the relatively low importance of the spatial accuracy of the detection, the nano model is considered as the best option.</p>
+            <p>Considering the time constraints of the project, the model is trained using a pre-labeled traffic cones dataset. This data is obtained from a prebuilt set of cone images in <a href="#traffic-cones-4laxg_dataset">[14]</a>, and is split into a training, validation, and a test dataset. The YOLO model is trained using this data with a limit of 100 epochs for the training step. </p>
+            <p>Once the cone is detected by the Turtlebot camera, frame transformations are to be utilized to teach the location of the care package with respect to the robot's body frame. This location is then sent to the path planning node. Results of training and testing this model are shown in ML Model Scoring below</p>
+        </li>
+        <li>
+            <p><b>Mapping: Understanding the environment (KNN).</b> LiDAR is used to collect data on the robot's surroundings, and unsupervised learning can be used to group the laser collision points to detect obstacles in the environment. The supervised learning can also handle long-range predictions where data points are sparse. When combined with the robot's odometry data from the encoders, which tracks position, velocity, orientation, and angular velocity, the robot can know where it is as it maps its environment. This operation is also known as simultaneous localization and mapping (SLAM) <a href="#SLAM">[15]</a>. The chosen ML algorithm is an unsupervised learning K-Nearest Neighbors (KNN) clustering. This clustering will identify where obstacles are in the map and thus localization can operate in parallel for complete SLAM. Utilizing this unsupervised SLAM method along with the supervised YOLO model, the robot can fully understand the environment and is ready for path planning and control.</p>
+        </li>
+        <li>
+            <b>Path Planning: Optimizing the path to the objective (Q-Learning).</b> Path planning and control execution is the final step of the navigation stack for autonomous mobile robots. The team utilizes a Q-reinforcement learning algorithm to determine an optimal pathing from start to objective using the LiDAR mapped environment. The Q-learning algorithm utilizes a <i>Q(s,a)</i> quality function where <i>s</i> and <i>a</i> are states and actions, respectively. In the context of path planning, the mapped environment is transitioned into a 2D grid map, and states represent grid points while actions represent movement from one grid point to the next. The estimated robot location and objective location are also marked on the map. The quality function (or policy) is defined as
+            <p>
+                \[
+                \begin{align}
+                    Q(s,a) = r(s,a) + \gamma \max Q(s',a')
+                \end{align}
+                \]
+            </p>
+            where &gamma; is a discount factor, <i>r</i> is an immediate reward, <i>s'</i> is the next state, and <i>a'</i> is the next action. <i>r</i> can be represented by the following options:
+            <p>
+                \[
+                \begin{align}
+                    r=\begin{cases}
+                        1 & \text{Arrive at target} \\
+                        -1 & \text{Collision with obstacle} \\
+                        -0.01 & \text{Other}
+                    \end{cases}
+                \end{align}
+                \]
+            </p>
+            <p>The Q-learning utilizes a table of all possible states and actions with their respective Q-values. The algorithm uses this table to maximize the cumulative reward that the agent could have in future states according to its next state. This algorithm is shown to improve efficiency of path planning versus it's classical counterparts <a href="#Q-Learning">[16]</a>.</p>
+            <p>This algorithm is not yet implemented, but will be included in the final report.</p>
+        </li>
+    </ul>
+</div>
+
+<div id="sec-results">
+    <h2 class="w3-text-indigo">Results and Discussion</h2>
+    <p>The goal of this project is to autonomously navigate a mobile robot to an objective with ML model scoring metrics as in the ML Model Scoring section below. The robot will map its environment, locate itself within the environment, identify its target, and then move to its target while avoiding collisions. At this point, the robot is capable of localization, mapping the environment and obstacles, and detecting its objective. In particular, the YOLO model has been trained and can detect a cone in real time with accuracy and precision. However, the robot still needs to handle noisy LiDAR data and plan a path to its destination which will be implemented in the final report. The overall final state objectives are:</p>
+    <ul>
+        <li>Distance from care package \(< \frac{1}{3}\) meter</li>
+        <li>Time to care package \(< 60\) seconds</li>
+    </ul>
+
+    <h3>ML Model Scoring</h3>
+    <ul>
+        <li>
+            <b>Object detection algorithm (YOLO).</b> The YOLOv8 model is trained on the training dataset, with a limit set to 100 epochs. The convergence is evaluated based on two loss metrics: one related to the ability of the model to accurately detect the object on the image and draw the corresponding box <i>(box_loss)</i>, and another related to the classification capability <i>(cls_loss)</i>. The box loss is calculated based on the CIoU loss function, that accounts for the overlap between the predicted actual boxes, but also the difference in aspect ratio and the distance between centers, while the classification loss is based on cross-entropy. These two metrics were tracked for the training and validation datasets, and are plotted on Figure 5. As one can see, the validation losses were still slowly decreasing at the end of the training, which suggests that the model was still improving and would have likely benefited from a higher number of epochs. However, the small slopes also suggests that the difference would not have been major and that this final model should be a good compromise between training duration and performance. This is confirmed by the high precision, recall, and mAP50 highlighted in Figure 5. For that specific problem, the mAP50 corresponds to the area under the precision-recall curve  calculated at an intersection over union (IoU) threshold of 0.50. The IoU corresponds to the ratio between the overlap of the predicted box and ground truth box, and the area of the union of these two boxes. The high value of these metrics, around 0.85-0.9, shows that the trained model performs well on the validation set.
+            <p>Each prediction of the model is associated with the probability that the object is a cone. Depending on the detection threshold used on this probability to accept or reject the detection, the performance of the model changes, as can be seen on Figure 6 which shows the evolution of the model's precision, recall, and F1 score for different confidence thresholds. With no surprise, the highest precision is achieved using a higher confidence threshold, since keeping the prediction with only high probability of being cones reduces the risk of false positive. In the mean time a higher threshold also reduces the recall, since more and more actual cone are no longer detected as such due to their probability being lower than the threshold. In order to find the best compromise, one can use the F1 score that combines both metrics, and find the threshold value that maximizes it. In this specific case, the optimum confidence threshold seems to be 0.467. The corresponding precision is 0.88, and the recall is 0.82. On the precision-recall curve, this point corresponds to the top right corner of the curve, giving the optimal compromise (Figure 7).</p>
+            <p>Once the model created and validated, it was tested to detect a cone on a few custom pictures to assess its performance and limitations. Overall, the detection works great in cases where the cone is mostly visible, with the model giving high prediction probabilities. However, the model starts to show some limitations when it comes to cases for which most of the cone is obstructed. This issue likely stems from the training dataset which mainly contains isolated cones. Better results could likely be obtained by creating a custom dataset with partially hidden cones, and training the algorithm on this data. However, with the time limitations of this project in mind, the model performs sufficiently well for cone detection. A few examples are provided in Figure 8.</p>
+            <figure>
+                <img src="figs/yolo_metrics/results.png" alt="Training Evaluation" style="width: 75%;">
+                <figcaption>Figure 5: Evaluation metrics evolution across training. The x axis is labeled in epochs.</figcaption>
+            </figure>
+            <div style="display: flex; justify-content: center;">
+                <figure>
+                    <img src="figs/yolo_metrics/P_curve.png" alt="Precision curve" style="width: 100%;">
+                    <figcaption style="margin-left: -30%;">(a) Precision curve</figcaption>
+                </figure>
+                <figure>
+                    <img src="figs/yolo_metrics/R_curve.png" alt="Recall curve" style="width: 100%;">
+                    <figcaption style="margin-left: -25%;">(b) Recall curve</figcaption>
+                </figure>
+                <figure>
+                    <img src="figs/yolo_metrics/F1_curve.png" alt="F1 curve" style="width: 100%;">
+                    <figcaption style="margin-left: -25%;">(c) F1 curve</figcaption>
+                </figure>
+            </div>
+            <p style="text-align: center; margin-top: 0%; margin-left: -5%;">Figure 6: Precision, recall, and F1 score for different confidence thresholds.</p>
+            <figure>
+                <img src="figs/yolo_metrics/PR_curve.png" alt="Precision-Recall curve" style="width: 50%;">
+                <figcaption style="margin-left: -5%;">Figure 7: Precision-Recall curve. The optimal point on the top right corner corresponds to a confidence threshold of 0.467.</figcaption>
+            </figure>
+            <figure>
+                <img src="figs/conde_detection.png" alt="Cone Detection" style="width: 50%;">
+                <figcaption>Figure 8: Examples of detection tests. On the top, the cone is mostly visible and the model is able to detect it with high probability. On the bottom left, the cone was mostly hidden but was still detected with a probability of 0.5. On the bottom right, the model was unable to detect the cone.</figcaption>
+            </figure>
+        </li>
+        <li>
+            <p><b>Mapping Algorithm (KNN).</b> K-Nearest-Neighbors will be used to assign new LiDAR data points to pre-existing clusters and to filter noise. This clustering assignment will then be measured using the silhouette coefficient, which compares intra-cluster cohesion to inter-cluster separation. The target silhouette coefficient is 0.7+. This scoring is not yet implemented, but will be included in the final report.</p>
+        </li>
+        <li>
+            <p><b>Path Planning (Q-Learning).</b> Minimize Cross-Entropy Loss for reinforcement learning, with a goal of \(< 10\%\) error. This scoring is not yet implemented, but will be included in the final report.</p>
+        </li>
+    </ul>
+</div>
+
+<div id="sec-extras">
+    <h2 class="w3-text-indigo">Next Steps</h2>
+    <p>Next Steps include:</p>
+    <ul>
+        <li>Build physical test environment</li>
+        <li>Connect and operate with Turtlebot camera</li>
+        <li>Apply Kalman filtering for noisy data cleaning</li>
+        <li>Create, train, and score mapping ML algorithm</li>
+        <li>Create, train, and score path-planning ML Algorithm</li>
+        <li>Implement ROS2 Workspace</li>
+        <li>Execute workspace on physical Turtlebot and assess its performance</li>
+    </ul>
+    <p>Team Gantt chart (Figure 9) and contribution table (Table 1) are shown below.</p>
+    <figure>
+        <img src="figs/gantt.png" alt="Team Gantt Chart">
+        <figcaption>Figure 9: Team Gantt Chart</figcaption>
+    </figure>
+
+    <table>
+        <caption>Table 1: Team Contributions</caption>
+        <thead class="w3-light-blue">
+            <tr>
+                <th>Name</th>
+                <th>Proposal Contributions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Jacob Blevins</td>
+                <td>Literature review, problem definition, ROS2 implementation, Kalman Filter, and Q-learning algorithm</td>
+            </tr>
+            <tr>
+                <td>Evan Boekweg</td>
+                <td>ROS2 implementation, LiDAR raw data collection and extraction, metrics, goals, and results</td>
+            </tr>
+            <tr>
+                <td>Ilias Baali</td>
+                <td>YOLO algorithm and computer vision</td>
+            </tr>
+            <tr>
+                <td>Anupama Nair</td>
+                <td>LiDAR data pre-processing</td>
+            </tr>
+            <tr>
+                <td>Pierros-Christos Skafidas</td>
+                <td>Dataset review and LiDAR data pre-processing</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer class="w3-container w3-padding-64 w3-opacity">
+    <div>
+        <div id="hottopic" class="csl-entry">[1] Cann, D. O. (2016). These are the top 10 emerging technologies of 2016. <i>Media Relations World Economic Forum</i>.</div>
+        <div id="autonomous_review" class="csl-entry">[2] Parekh, D., Poddar, N., Rajpurkar, A., Chahal, M., Kumar, N., Joshi, G. P., &#38; Cho, W. (2022). A Review on Autonomous Vehicles: Progress, Methods and Challenges. <i>Electronics</i>, <i>11</i>(14). https://doi.org/10.3390/electronics11142162</div>
+        <div id="control_CNN" class="csl-entry">[3] Spielberg, N. A., Brown, M., Kapania, N. R., Kegelman, J. C., &#38; J. Christian Gerdes. (2019). Neural network vehicle models for high-performance automated driving. <i>Science Robotics</i>, <i>4</i>(28), eaaw1975. https://doi.org/10.1126/scirobotics.aaw1975</div>
+        <div id="tesla" class="csl-entry">[4] <i>Tesla</i>. (2024). https://tesla.com</div>
+        <div id="waymo" class="csl-entry">[5] <i>Waymo</i>. (2024a). https://waymo.com</div>
+        <div id="autocontrol" class="csl-entry">[6] Xia, W., Li, H., &#38; Li, B. (2016). A Control Strategy of Autonomous Vehicles Based on Deep Reinforcement Learning. <i>2016 9th International Symposium on Computational Intelligence and Design (ISCID)</i>, <i>2</i>, 198-201. https://doi.org/10.1109/ISCID.2016.2054</div>
+        <div id="mobilecontrol" class="csl-entry">[7] Ruan, X., Ren, D., Zhu, X., &#38; Huang, J. (2019). Mobile Robot Navigation based on Deep Reinforcement Learning. <i>2019 Chinese Control And Decision Conference (CCDC)</i>, 6174-6178. https://doi.org/10.1109/CCDC.2019.8832393</div>
+        <div id="lds02" class="csl-entry">[8] <i>LDS-02</i>. (2024). https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_lds_02/</div>
+        <div id="camera" class="csl-entry">[9] <i>Raspberry Pi Camera</i>. (2024). https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_raspi_cam/</div>
+        <div id="encoders" class="csl-entry">[10] <i>Encoder</i>. (2024). https://emanual.robotis.com/docs/en/platform/turtlebot3/appendixes/#more-info</div>
+        <div id="KalmanFilter1D" class="csl-entry">[11] Wilson, D. (2024). <i>The Kalman Filter: An Example of Using 1-D Filters</i>. https://www.kalmanfilter.net/kalman1d.html. https://www.kalmanfilter.net/kalman1d.html</div>
+        <div id="yolo" class="csl-entry">[12] Redmon, J., Divvala, S., Girshick, R., &#38; Farhadi, A. (2016). You Only Look Once: Unified, Real-Time Object Detection. <i>2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</i>, 779-788. https://doi.org/10.1109/CVPR.2016.91</div>
+        <div id="UltralyticsYOLO2024" class="csl-entry">[13] Ultralytics. (2024). <i>Ultralytics YOLO Documentation: Licenses</i>. https://docs.ultralytics.com/#yolo-licenses-how-is-ultralytics-yolo-licensed. https://docs.ultralytics.com/#yolo-licenses-how-is-ultralytics-yolo-licensed</div>
+        <div id="traffic-cones-4laxg_dataset" class="csl-entry">[14] Traffic Cones Dataset . (2022). [ Open Source Dataset ]. In <i> Roboflow Universe </i>.  Roboflow . %20https://universe.roboflow.com/robotica-xftin/traffic-cones-4laxg%20</div>
+        <div id="SLAM" class="csl-entry">[15] Wang, X. (2018). Autonomous Mobile Robot Visual SLAM Based on Improved CNN Method. <i>IOP Conf. Ser.: Mater. Sci. Eng</i>. https://doi.org/https://doi.org/10.1088/1757-899X/466/1/012114</div>
+        <div id="Q-Learning" class="csl-entry">[16] Konar, A., Goswami Chakraborty, I., Singh, S. J., Jain, L. C., &#38; Nagar, A. K. (2013). A Deterministic Improved Q-Learning for Path Planning of a Mobile Robot. <i>IEEE Transactions on Systems, Man, and Cybernetics: Systems</i>, <i>43</i>(5), 1141-1153. https://doi.org/10.1109/TSMCA.2012.2227719</div>
+        <!-- <div id="PPO_algo" class="csl-entry">Jin, X., &#38; Wang, Z. (2022). Proximal policy optimization based dynamic path planning algorithm for mobile robots. <i>Electronics Letters</i>, <i>58</i>(1), 13-15. https://doi.org/https://doi.org/10.1049/ell2.12342</div>
+        <div id="scikit-learn-dbscan" class="csl-entry">Scikit-learn Developers. (2024). <i>DBSCAN: Density-Based Spatial Clustering of Applications with Noise</i>. https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html. https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html</div>
+        <div id="waymo" class="csl-entry"><i>Waymo</i>. (2024a). https://waymo.com</div>
+        <div id="lidar_path_planning" class="csl-entry">Zamanakos, G., Tsochatzidis, L., Amanatiadis, A., &#38; Pratikakis, I. (2021). A comprehensive survey of LIDAR-based 3D object detection methods with deep learning for autonomous driving. <i>Computers &#38; Graphics</i>, <i>99</i>, 153-181. https://doi.org/https://doi.org/10.1016/j.cag.2021.07.003</div> -->
+    </div>
+    <!-- <div>
+        <div id="hottopic" class="csl-entry">[1] Cann, D. Oliver. “These Are the Top 10 Emerging Technologies of 2016.” <i>Media Relations World Economic Forum</i>, 2016.</div>
+        <div id="autonomous_review" class="csl-entry">[2] Parekh, Darsh, et al. “A Review on Autonomous Vehicles: Progress, Methods and Challenges.” <i>Electronics</i>, vol. 11, no. 14, 2022, doi:10.3390/electronics11142162.</div>
+        <div id="tesla" class="csl-entry">[3] <i>Tesla</i>. 2024, https://tesla.com.</div>
+        <div id="waymo" class="csl-entry">[4] <i>Waymo</i>. 2024, https://waymo.com.</div>
+        <div id="autocontrol" class="csl-entry">[5] Xia, Wei, et al. “A Control Strategy of Autonomous Vehicles Based on Deep Reinforcement Learning.” <i>2016 9th International Symposium on Computational Intelligence and Design (ISCID)</i>, vol. 2, 2016, pp. 198–201, doi:10.1109/ISCID.2016.2054.</div>
+        <div id="mobilecontrol" class="csl-entry">[6] Ruan, Xiaogang, et al. “Mobile Robot Navigation Based on Deep Reinforcement Learning.” <i>2019 Chinese Control And Decision Conference (CCDC)</i>, 2019, pp. 6174–78, doi:10.1109/CCDC.2019.8832393.</div>
+        <div id="lds02" class="csl-entry">[7] <i>LDS-02</i>. 2024, https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_lds_02/.</div>
+        <div id="camera" class="csl-entry">[8] <i>Raspberry Pi Camera</i>. 2024, https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_raspi_cam/.</div>
+        <div id="encoders" class="csl-entry">[9]<i>Encoder</i>. 2024, https://emanual.robotis.com/docs/en/platform/turtlebot3/appendixes/#more-info.</div>
+        <div id="lidar_path_planning" class="csl-entry">[10] Zamanakos, Georgios, et al. “A Comprehensive Survey of LIDAR-Based 3D Object Detection Methods with Deep Learning for Autonomous Driving.” <i>Computers &#38; Graphics</i>, vol. 99, 2021, pp. 153–81, doi:https://doi.org/10.1016/j.cag.2021.07.003.</div>
+        <div id="control_CNN" class="csl-entry">[11] Spielberg, Nathan A., et al. “Neural Network Vehicle Models for High-Performance Automated Driving.” <i>Science Robotics</i>, vol. 4, no. 28, 2019, p. eaaw1975, doi:10.1126/scirobotics.aaw1975.</div>
+        <div id="scikit-learn-dbscan" class="csl-entry">[12] Scikit-learn Developers. <i>DBSCAN: Density-Based Spatial Clustering of Applications with Noise</i>. https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html, 2024, https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html.</div>
+        <div id="KalmanFilter1D" class="csl-entry">[13] Wilson, David. <i>The Kalman Filter: An Example of Using 1-D Filters</i>. https://www.kalmanfilter.net/kalman1d.html, 2024, https://www.kalmanfilter.net/kalman1d.html.</div>
+        <div id="yolo" class="csl-entry">[14] Redmon, Joseph, et al. “You Only Look Once: Unified, Real-Time Object Detection.” <i>2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</i>, 2016, pp. 779–88, doi:10.1109/CVPR.2016.91.</div>
+        <div id="SLAM" class="csl-entry">[15] Wang, Xuanbo. “Autonomous Mobile Robot Visual SLAM Based on Improved CNN Method.” <i>IOP Conf. Ser.: Mater. Sci. Eng</i>, 2018, doi:https://doi.org/10.1088/1757-899X/466/1/012114.</div>
+        <div id="PPO_algo" class="csl-entry">[16] Jin, Xin, and Zhengxiao Wang. “Proximal Policy Optimization Based Dynamic Path Planning Algorithm for Mobile Robots.” <i>Electronics Letters</i>, vol. 58, no. 1, 2022, pp. 13–15, doi:https://doi.org/10.1049/ell2.12342.</div>
+      </div> -->
+</footer>
+
+</body>
+</html>
