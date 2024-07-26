@@ -258,50 +258,50 @@ L_value = 0.5E[A^2]
 
                 <p>Once the model created and validated, it was tested to detect a cone on a few custom pictures to assess its performance and limitations. Overall, the detection works great in cases where the cone is mostly visible, with the model giving high prediction probabilities. However, the model starts to show some limitations when it comes to cases for which most of the cone is obstructed. This issue likely stems from the training dataset which mainly contains isolated cones. Better results could likely be obtained by creating a custom dataset with partially hidden cones, and training the algorithm on this data. However, with the time limitations of this project in mind, the model performs sufficiently well for cone detection. Several examples are shown in Figure 10, and a working example within the ROS pipeline is shown in Figure 11.</p>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/yolo_metrics/results.png" alt="Evaluation metrics evolution across training">
                     <figcaption>Figure 7: Evaluation metrics evolution across training. The x axis is labeled in epochs.</figcaption>
-                </div>
+                </figure>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/yolo_metrics/PR_curve.png" alt="Precision-Recall curve">
                     <figcaption>Figure 8: Precision-Recall curve. The optimal point on the top right corner corresponds to a confidence threshold of 0.467.</figcaption>
-                </div>
+                </figure>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/yolo_metrics/P_curve.png" alt="Precision curve">
                     <figcaption>Figure 9a: Precision curve</figcaption>
-                </div>
-                <div class="figure">
+                </figure>
+                <figure>
                     <img src="figs/yolo_metrics/R_curve.png" alt="Recall curve">
                     <figcaption>Figure 9b: Recall curve</figcaption>
-                </div>
-                <div class="figure">
+                </figure>
+                <figure>
                     <img src="figs/yolo_metrics/F1_curve.png" alt="F1 curve">
                     <figcaption>Figure 9c: F1 curve</figcaption>
-                </div>
-                <div class="figure">
+                </figure>
+                <figure>
                     <figcaption>Figure 9: Precision, recall, and F1 score for different confidence thresholds.</figcaption>
-                </div>
+                </figure>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/conde_detection.png" alt="Examples of detection tests">
                     <figcaption>Figure 10: Examples of detection tests. On the top, the cone is mostly visible and the model is able to detect it with high probability. On the bottom left, the cone was mostly hidden but was still detected with a probability of 0.5. On the bottom right, the model was unable to detect the cone.</figcaption>
-                </div>
+                </figure>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/yolo_cone_detection_sim.png" alt="Cone detection implemented in the ROS pipeline and simulated in Gazebo">
                     <figcaption>Figure 11: Cone detection implemented in the ROS pipeline and simulated in Gazebo.</figcaption>
-                </div>
+                </figure>
             </li>
 
             <li><strong>Mapping Algorithm (ICP).</strong>
                 <p>Iterative Closest Point is implemented to help improve the performance of the mapping process in more noisy environments. For example, ICP was used to match the point clouds at timeframes 0 and 150 here. As we can see, it transforms the point cloud almost correctly to the frame of the point cloud at timeframe 0.</p>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/icp_map.png" alt="Sample ICP between timeframes 0 and 150">
                     <figcaption>Figure 12: Sample ICP between timeframes 0 and 150.</figcaption>
-                </div>
+                </figure>
 
                 <p>To compare the two methods, RMSE values were calculated between the two matched point clouds. The LiDAR processing using encoders as seen in Section <a href="#sec-preprocessing">2</a> yielded a RMSE value of 0.228, whereas the ICP method gave 0.232. As seen from both the map as well as the RMSE values, the ICP algorithm produced more error than using only encoder readings.</p>
 
@@ -322,15 +322,15 @@ L_value = 0.5E[A^2]
                 </ul>
                 <p>To compare the cluster quality, we used the Silhouette Coefficient score. After testing out the different parameter pairs, the best pair was eps=0.1, and MinPts=3 with a Silhouette Coefficient score of -0.21215831709613261. In Figure 14, we see the optimized clustering result.</p>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/DBSCAN_e07_n3.png" alt="Sample DBSCAN Clusters (eps=0.7 MinPts=3)">
                     <figcaption>Figure 13: Sample DBSCAN Clusters (eps=0.7 MinPts=3).</figcaption>
-                </div>
+                </figure>
 
-                <div class="figure">
+                <figure>
                     <img src="figs/optimal_DBSCAN_clustering.png" alt="Optimized DBSCAN Clusters (eps=0.7 MinPts=3)">
                     <figcaption>Figure 14: Optimized DBSCAN Clusters (eps=0.1 MinPts=3).</figcaption>
-                </div>
+                </figure>
             </li>
 
             <li><strong>Path Planning (PPO).</strong>
@@ -361,10 +361,10 @@ L_value = 0.5E[A^2]
             <li>Knit together algorithms and ROS2 workspace</li>
             <li>Execute workspace on physical Turtlebot and assess its performance</li>
         </ul>
-        <div class="figure">
+        <figure>
             <img src="figs/gantt.png" alt="Team Gantt Chart">
             <figcaption>Figure 16: Team Gantt Chart</figcaption>
-        </div>
+        </figure>
         <table class="table">
             <caption>Table 1: Team Contributions</caption>
             <thead class="w3-light-blue">
