@@ -1,6 +1,11 @@
+"""This module contains the launch description to launch all nodes of the system."""
+
+from launch_ros.substitutions import FindPackageShare
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, TextSubstitution
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, TextSubstitution, PathJoinSubstitution
 
 from launch_ros.actions import Node
 

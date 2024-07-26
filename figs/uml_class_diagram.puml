@@ -1,0 +1,100 @@
+@startuml
+
+package "ROS2 Nodes" {
+    interface INode {
+        ~_init_member_variables()
+        ~_init_ros_parameters()
+        ~_init_publishers()
+        ~_init_subscribers()
+        ~_init_timers()
+    }
+
+    class YoloNode {
+        + image_sub: Subscription<Image>
+        + bbox_pub: Publisher<BoundingBox>
+        + bbox_image_pub: Publisher<Image>
+        + bbox_pub_timer: Timer
+        + image_sub_callback(): void
+        + bbox_pub_timer_callback(): void
+    }
+    class PosFinderNode {
+        + bbox_sub: Subscription<BoundingBox>
+        + lidar_sub: Subscription<LaserScan>
+        + objective_pos_pub: Publisher<Point>
+        + objective_pos_pub_timer: Timer
+        + lidar_sub_callback(): void
+        + bbox_sub_callback(): void
+        + objective_pos_pub_timer_callback(): void
+    }
+    class PpoNode {
+        + odom_sub: Subscription<Odometry>
+        + _sub: Subscription<Point>
+        + cmd_vel_pub: Publisher<Twist>
+        + cmd_vel_pub_timer: Timer
+        + odom_sub_callback(): void
+        + objective_pos_sub_callback(): void
+        + cmd_vel_pub_timer_callback(): void
+    }
+    class CameraNode {
+        + image_pub: Publisher<Image>
+        + image_pub_timer: Timer
+        + image_pub_timer_callback(): void
+    }
+
+    YoloNode --|> INode
+    PosFinderNode --|> INode
+    PpoNode --|> INode
+    CameraNode --|> INode
+}
+
+package "Algorithm Handlers" {
+    interface IYoloHandler {
+        +get_bounding_box(Image): (bool, BoundingBox)
+        +get_bbox_image(Image): Image
+    }
+    interface IPosFinderHandler {
+        +get_objective_pos(BoundingBox, LaserScan): Point
+    }
+    interface IPpoHandler {
+        +get_cmd_vel(Odometry, Path): Twist
+    }
+
+    class YoloHandler
+    class PosFinderHandler
+    class PpoHandler
+
+    YoloHandler --|> IYoloHandler
+    PosFinderHandler --|> IPosFinderHandler
+    PpoHandler --|> IPpoHandler
+
+    IYoloHandler <-- YoloNode
+    IPosFinderHandler <-- PosFinderNode
+    IPpoHandler <-- PpoNode
+}
+
+package "ML Algorithms" {
+    class Yolo
+    class PosFinder
+    class Ppo
+
+    interface IYolo {
+        +get_bounding_box(ndarray): (bool, ndarray)
+        +get_bbox_image(ndarray): ndarray
+    }
+    interface IPosFinder {
+        +get_objective_pos(ndarray, ndarray): ndarray
+    }
+    interface IPpo {
+        +get_cmd_vel(ndarray, ndarray): ndarray
+    }
+
+    Yolo --|> IYolo
+    PosFinder --|> IPosFinder
+    Ppo --|> IPpo
+
+    IYolo <-- YoloHandler
+    IPosFinder <-- PosFinderHandler
+    IPpo <-- PpoHandler
+}
+
+@enduml

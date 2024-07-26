@@ -30,6 +30,7 @@ setup(
             "yolo_node = ml_robotics_project.yolo_node_entry_point:main",
             "camera_presenter_node = ml_robotics_project.CameraPresenterNode:main",
             "camera_node = ml_robotics_project.camera_node_entry_point:main",
+            "pos_finder_node = ml_robotics_project.pos_finder_node_entry_point:main",
         ],
     },
 )

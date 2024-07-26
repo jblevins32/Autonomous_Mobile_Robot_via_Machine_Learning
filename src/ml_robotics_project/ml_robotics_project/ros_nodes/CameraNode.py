@@ -1,3 +1,7 @@
+"""This module implements the CameraNode class, which captures images from a camera and publishes them on a ROS topic.
+
+CameraNode is device-agnostic and can therefore be used on many devices and cameras."""
+
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
