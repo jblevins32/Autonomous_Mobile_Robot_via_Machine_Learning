@@ -56,6 +56,7 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
             - `ml_algorithms`: ML algorithms
                 - `Slam.py`: AStar algorithm class
                 - `Yolo.py`: Node that performs SLAM using lidar and odometry data
+                - `PPO2`: All PPO nodes, algorithms, and data
             - `ros_nodes`: Classes that connect to the ROS environment
                 - `CameraNode.py`: Node that captures camera images and feeds it into ROS
                 - `YoloNode.py`: Node that computes objective coordinates given an image
