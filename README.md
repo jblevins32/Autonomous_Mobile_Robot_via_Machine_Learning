@@ -46,8 +46,6 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
     - `ml_robotics_project`: ROS program files
         - `ml_robotics_project`: ROS program code
             - `algorithm_handlers`: Translate beteween ROS and ML
-                - `AStarHandler.py`: Handler for AStar algorithm
-                - `IAStarHandler.py`: Interface for AStar handlers
                 - `IPpoHandler.py`: Interface for PPO handlers
                 - `ISlamHandler.py`: Interface for SLAM handlers
                 - `IYoloHandler.py`: Interface for YOLO handlers
@@ -55,21 +53,20 @@ The objective of this project is to develop autonomous, non-holonomic mobile rob
                 - `SlamHandler.py`: Handler for SLAM algorithm
                 - `YoloHandler.py`: Handler for YOLO algorithm
             - `ml_algorithms`: ML algorithms
-                - `AStar.py`: AStar algorithm class
-                - `CameraPresenterNode.py`: Node that presents camera feed to a camera view
+                - `Slam.py`: AStar algorithm class
+                - `Yolo.py`: Node that performs SLAM using lidar and odometry data
+            - `ros_nodes`: Classes that connect to the ROS environment
+                - `CameraNode.py`: Node that captures camera images and feeds it into ROS
+                - `YoloNode.py`: Node that computes objective coordinates given an image
                 - `INode.py`: Initializes variables and parameters
                 - `PpoNode.py`: Node that computes desired robot velocity given odometry and trajectory data
-                - `SlamNode.py`: Node that performs SLAM using lidar and odometry data
-                - `stream_image.py`: Class that turns image captures to ROS format
-                - `yolo_node_entry_point.py`: Main entry point for the ROS program
-            - `ros_nodes`: Classes that connect to the ROS environment
-                - `YoloNode.py`: Node that computes objective coordinates given an image
             - `util`: Folder containing ROS Utility scripts
                 - `ROS_message_utils`: Constructs a ROS2 PoseStamped message
-            - `ppo_node_entry_point.py`: This module implements the entry point for the YOLO node
+            - `ppo_node_entry_point.py`: This module implements the entry point for the PPO node
             - `slam_node_entry_point.py`: This module implements the entry point for the SLAM node
-            - `stream_image.py`: Class that turns image captures to ROS format
-            - `yolo_node_entry_point.py`: Main entry point for the ROS program
+            - `yolo_node_entry_point.py`: Main entry point for the YOLO node
+            - `rel_pos_finder_node_entry_point.py`: Entry point for the PosFinderNode
+            - `camera_node_entry_point.py`: Entry point for the camera node.
     - `object_detection`: Object detection pipeline
         - `predict`: Script used for predition
         - `yolo_training.py`: Script used for Object detection training using YOLO
