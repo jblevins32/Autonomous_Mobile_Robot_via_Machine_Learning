@@ -1,7 +1,7 @@
 Autonomous Mobile Robot via Machine Learning - CS7641 - Machine Learning
 =============================
 
-The objective of this project is to develop autonomous, non-holonomic mobile robot ML algorithms that must navigate a Turtlebot3 through an environment to capture a care package
+The objective of this project is to develop autonomous, mobile robot ML algorithms that must navigate a Turtlebot3 through an environment to capture a care package
 
 # Table of Contents
 <!--ts-->
